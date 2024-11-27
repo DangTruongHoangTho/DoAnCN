@@ -22,60 +22,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/detail_pro.css" />
-    <style>
-      /* Add some basic styles for the slideshow */
-      .mySlides {
-        display: none;
-      }
-      .prev,
-      .next {
-        cursor: pointer;
-        position: absolute;
-        top: 50%;
-        width: auto;
-        padding: 16px;
-        margin-top: -22px;
-        color: white;
-        font-weight: bold;
-        font-size: 18px;
-        transition: 0.6s ease;
-        border-radius: 0 3px 3px 0;
-        user-select: none;
-      }
-      .next {
-        right: 0;
-        border-radius: 3px 0 0 3px;
-      }
-      .prev:hover,
-      .next:hover {
-        background-color: rgba(0, 0, 0, 0.8);
-      }
-      .text {
-        color: #f2f2f2;
-        font-size: 15px;
-        padding: 8px 12px;
-        position: absolute;
-        bottom: 8px;
-        width: 100%;
-        text-align: center;
-      }
-      .numbertext {
-        color: #f2f2f2;
-        font-size: 12px;
-        padding: 8px 12px;
-        position: absolute;
-        top: 0;
-      }
-      .demo {
-        cursor: pointer;
-      }
-      .active,
-      .demo:hover {
-        opacity: 1;
-      }
-    </style>
 </head>
-
 <body>
     <div class="Navigation_Sticky">
         <nav class="navbar navbar-expand-lg sticky-top">
@@ -125,11 +72,15 @@
             <!-- Thanh tìm kiếm (Begin)-->
             <div class="col-lg-4 col-md-12 col-12 justify-content-end" id="search-header">
                 <div class="col-lg-12 col-md-12 col-12 justify-content-end d-flex align-items-center" id="account-cart-container">
-                    <!-- Đăng nhập -->
-                    <a href="dangnhap.php" class="nav-link">Đăng nhập</a>
-                    <!-- Đăng ký -->
-                    <a href="dangky.php" class="nav-link">Đăng ký</a>
-                    <!-- Giỏ hàng -->
+                    <div class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">
+                            <i class="fa fa-user" aria-hidden="true"></i> Đăng nhập
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="dangnhap.php" class="dropdown-item">Đăng nhập</a>
+                            <a href="dangky.php" class="dropdown-item">Đăng ký</a>
+                        </div>
+                    </div>
                     <a href="giohang.php" class="nav-link">
                         <i class="fa fa-shopping-cart"></i> Giỏ hàng
                     </a>

@@ -100,6 +100,19 @@ $(document).ready(function () {
     slides[slideIndex - 1].style.display = "block";
     dots[slideIndex - 1].className += " active";
   }
+  document.querySelector(".dropdown-toggle").addEventListener("click", function (e) {
+    e.preventDefault(); // Ngăn điều hướng link
+    const menu = this.nextElementSibling; // Lấy menu liền sau phần tử được click
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+  });
+
+  // Ẩn menu khi click ra ngoài
+  document.addEventListener("click", function (e) {
+      const dropdown = document.querySelector(".dropdown");
+      if (!dropdown.contains(e.target)) {
+          dropdown.querySelector(".dropdown-menu").style.display = "none";
+      }
+  });
 });
 
 function ajax_giohang(){

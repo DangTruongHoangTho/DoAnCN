@@ -66,97 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Ký</title>
-    <style>
-        .form-container {
-            width: 400px;
-            background: #fff;
-            padding: 20px 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin: auto;
-            margin-bottom: 100px;
-        }
-
-        .form-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .form-container label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .form-container input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .form-container button {
-            width: 100%;
-            padding: 10px;
-            background-color: #d2232a;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .form-container button:hover {
-            background-color: #3a393a;
-        }
-
-        .error {
-            color: red;
-            margin-bottom: 15px;
-        }
-
-        .success {
-            color: green;
-            margin-bottom: 15px;
-        }
-
-        .dangky {
-            text-align: center;
-            color: #fff;
-            padding: 20px;
-            background-color: #3a393a;
-            margin-top: 15px;
-            margin-bottom: 30px;
-        }
-
-        .dangky h2 {
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-
-        .dangky p {
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-
-        .dangnhap-button {
-            display: inline-block;
-            padding: 10px 30px;
-            background-color: #fff;
-            color: #3a393a;
-            text-decoration: none;
-            font-size: 16px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .dangnhap-button:hover {
-            text-decoration: none;
-            color: #3a393a;
-
-        }
-    </style>
     <!-- link ngoài -->
     <link
         rel="stylesheet"
@@ -172,12 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
-    <div class="dangky">
+    <div class="dangnhap">
         <h2>Đã là thành viên?</h2>
         <p>Đăng nhập để truy cập vào tài khoản của bạn</p>
         <a href="dangnhap.php" class="dangnhap-button">Đăng Nhập</a>
     </div>
-    <div class="form-container">
+    <div class="form-container-dangky">
         <h2>Đăng Ký</h2>
         <?php if ($error): ?>
             <div class="error"><?= htmlspecialchars($error) ?></div>
@@ -187,23 +96,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
         <form action="dangky.php" method="post">
             <label for="last_name">Họ*</label>
-            <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($last_name ?? '') ?>" required>
+            <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($last_name ?? '') ?>" placeholder="Họ" required>
 
             <label for="first_name">Tên*</label>
-            <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($first_name ?? '') ?>" required>
+            <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($first_name ?? '') ?>" placeholder="Tên" required>
 
             <label for="email">Email*</label>
-            <input type="email" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?>" required>
+            <input type="email" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?>" placeholder="Email" required>
 
-            <label for="phone">Phone*</label>
-            <input type="tel" id="phone" name="phone" value="<?= htmlspecialchars($phone ?? '') ?>" required>
+            <label for="phone">Số điện thoại*</label>
+            <input type="tel" id="phone" name="phone" value="<?= htmlspecialchars($phone ?? '') ?>" placeholder="Số điện thoại" required>
 
             <label for="password">Mật khẩu*</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
 
             <label for="confirm_password">Nhập lại mật khẩu*</label>
-            <input type="password" id="confirm_password" name="confirm_password" required>
-
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Nhập lại mật khẩu" required>
+            <div class="checkbox-container">
+                <input type="checkbox" id="show_password" onclick="displayPass()" />
+                <label for="show_password">Hiện mật khẩu</label>
+            </div>
             <button type="submit">Đăng Ký</button>
         </form>
     </div>

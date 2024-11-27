@@ -15,8 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Địa chỉ email không hợp lệ.";
     } elseif ($password !== $confirm_password) {
         $error = "Mật khẩu không khớp.";
-    } elseif (!preg_match('/^[0-9]{10}$/', $phone)) {
-        $error = "Số điện thoại phải là 10 chữ số.";
     } else {
         // // Kết nối cơ sở dữ liệu
         // $servername = "localhost";
@@ -60,91 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Ký</title>
-    <style>
-        .form-container {
-            width: 400px;
-            background: #fff;
-            padding: 20px 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin: auto;
-            margin-top: 15px;
-            margin-bottom: 30px;
-
-        }
-        .form-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .form-container label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .form-container input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .form-container button {
-            width: 100%;
-            padding: 10px;
-            background-color: #d2232a;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .form-container button:hover {
-            background-color: #3a393a;
-        }
-        .error {
-            color: red;
-            margin-bottom: 15px;
-        }
-        .success {
-            color: green;
-            margin-bottom: 15px;
-        }
-        .dangky {
-            text-align: center;
-            color: #fff;
-            padding: 20px;
-            background-color: #3a393a;
-            margin-bottom: 100px;
-        }
-
-        .dangky h2 {
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-
-        .dangky p {
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-
-        .register-button {
-            display: inline-block;
-            padding: 10px 30px;
-            background-color: #fff;
-            color: #3a393a;
-            text-decoration: none;
-            font-size: 16px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .register-button:hover {
-            text-decoration: none;
-            color: #3a393a;
-
-        }
-    </style>
+    <title>Đăng Nhập</title>
     <!-- link ngoài -->
     <link
         rel="stylesheet"
@@ -159,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-    <div class="form-container">
+    <div class="form-container-dangnhap">
         <h2>Đăng Nhập</h2>
         <?php if ($error): ?>
             <div class="error"><?= htmlspecialchars($error) ?></div>
@@ -170,12 +84,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form action="dangnhap.php" method="post">
 
             <label for="email">Email*</label>
-            <input type="email" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?>" required>
+            <input type="email" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?> " placeholder="Email" required>
             
             <label for="password">Mật khẩu*</label>
-            <input type="password" id="password" name="password" required>
-
-            <div><a href="#" class="">Quên mật khẩu?</a></div>
+            <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
+            <div class="checkbox-container">
+                <input type="checkbox" id="show_password" onclick="displayPass()" />
+                <label for="show_password">Hiện mật khẩu</label>
+            </div>
+            <div><a href="quenmk.php" class="">Quên mật khẩu?</a></div>
 
             <button type="submit">Đăng Nhập</button>
         </form>

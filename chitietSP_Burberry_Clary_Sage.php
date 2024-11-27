@@ -443,4 +443,4 @@
       </main>
 
       <!-- Content End -->
-      <?php include "layout/footer.php"; ?>
+<?php include "layout/footer.php"; ?>

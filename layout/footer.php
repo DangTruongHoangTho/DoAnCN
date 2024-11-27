@@ -14,7 +14,7 @@
               <div class="footer__widget">
                 <h2>Yêu cầu hỗ trợ</h2>
                 <ul>
-                  <li><a href="#">Về chúng tôi</a></li>
+                  <li><a href="about.php">Về chúng tôi</a></li>
                   <li><a href="#">Về cửa hàng chúng tôi</a></li>
                   <li><a href="#">Mua sắm an toàn</a></li>
                   <li><a href="#">Thông tin giao dịch</a></li>
@@ -78,5 +78,19 @@
     <script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/main.js"></script>
+    <script>
+      function displayPass(){
+          var passwordField = document.getElementById("password");
+          var passwordField1 = document.getElementById("confirm_password");
+          var checkBox = document.querySelector('input[type="checkbox"]');
+          if (checkBox.checked){
+              passwordField.type = 'text';
+              passwordField1.type = 'text';
+          } else {
+              passwordField.type = 'password';
+              passwordField1.type = 'password';
+          }
+      }
+    </script>
   </body>
 </html>

@@ -73,14 +73,23 @@
             <!-- Thanh tìm kiếm (Begin)-->
             <div class="col-lg-4 col-md-12 col-12 justify-content-end" id="search-header">
                 <div class="col-lg-12 col-md-12 col-12 justify-content-end d-flex align-items-center" id="account-cart-container">
-                    <!-- Đăng nhập -->
-                    <a href="dangnhap.php" class="nav-link">Đăng nhập</a>
-                    <!-- Đăng ký -->
-                    <a href="dangky.php" class="nav-link">Đăng ký</a>
-                    <!-- Giỏ hàng -->
-                    <a href="giohang.php" class="nav-link">
-                        <i class="fa fa-shopping-cart"></i> Giỏ hàng
-                    </a>
+                    <div class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">
+                            <i class="fa fa-user" aria-hidden="true"></i> Đăng nhập
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="dangnhap.php" class="dropdown-item">Đăng nhập</a>
+                            <a href="dangky.php" class="dropdown-item">Đăng ký</a>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <a href="giohang.php" class="nav-link">
+                            <i class="fa fa-shopping-cart"></i> Giỏ hàng
+                        </a>
+                        <div class="dropdown-menu">
+                            chua co san pham nao trong gio hang
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-lg-12 col-md-12 col-12 justify-content-end " id="account-cart-container">

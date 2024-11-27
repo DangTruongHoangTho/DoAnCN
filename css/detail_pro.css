@@ -50,6 +50,42 @@ body {
 #account-cart-container .nav-link:hover {
   color: #ff6b6b !important;
 }
+/* Đặt container dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Ẩn menu mặc định */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%; /* Hiển thị ngay dưới chữ "Đăng nhập" */
+  left: 0;
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  z-index: 1;
+  border-radius: 5px;
+}
+
+/* Căn chỉnh các mục trong menu */
+.dropdown-item {
+  display: block;
+  padding: 8px 12px;
+  color: #000;
+  text-decoration: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f1f1;
+  color: #000;
+}
+
+/* Hiển thị menu khi hover vào .dropdown */
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
 /* search bar */
 .search-header {
   display: flex;
