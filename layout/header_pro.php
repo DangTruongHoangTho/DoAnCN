@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>T&T Store</title>
+    <link
+        rel="website icon"
+        type="png"
+        href="images/banner/Logo.png"
+        id="logo" />
+    <!-- link ngoài -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/detail_pro.css" />
+    <style>
+      /* Add some basic styles for the slideshow */
+      .mySlides {
+        display: none;
+      }
+      .prev,
+      .next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        width: auto;
+        padding: 16px;
+        margin-top: -22px;
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+        transition: 0.6s ease;
+        border-radius: 0 3px 3px 0;
+        user-select: none;
+      }
+      .next {
+        right: 0;
+        border-radius: 3px 0 0 3px;
+      }
+      .prev:hover,
+      .next:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+      .text {
+        color: #f2f2f2;
+        font-size: 15px;
+        padding: 8px 12px;
+        position: absolute;
+        bottom: 8px;
+        width: 100%;
+        text-align: center;
+      }
+      .numbertext {
+        color: #f2f2f2;
+        font-size: 12px;
+        padding: 8px 12px;
+        position: absolute;
+        top: 0;
+      }
+      .demo {
+        cursor: pointer;
+      }
+      .active,
+      .demo:hover {
+        opacity: 1;
+      }
+    </style>
+</head>
+
+<body>
+    <div class="Navigation_Sticky">
+        <nav class="navbar navbar-expand-lg sticky-top">
+            <!-- Logo Begin-->
+            <div class="flex-container row col-lg-8 col-md-12 col-sm-12">
+                <div class="header-right col-xl-2 col-lg-3 col-md-3 col-sm-3 col-3 w-25">
+                    <a href="index.php" class="brand"><img src="images/banner/Logo.png" alt="Logo" title="logo" /></a>
+                </div>
+                <!-- Menu Begin-->
+                <div class="container menu-container col-lg-9 col-md-9 col-sm-9 col-9 text-center justify-content-end m-0 py-10">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive">
+                        <span class="fa fa-bars"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarResponsive">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a href="about.php" class="nav-link">Giới Thiệu </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="index.php#burberry" class="nav-link">Burberry</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="index.php#calvin_klein" class="nav-link">Calvin Klein</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="index.php#chanel" class="nav-link">Chanel</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="index.php#gucci" class="nav-link">Gucci</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="index.php#versace" class="nav-link">Versace</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="index.php#laurent" class="nav-link">Laurrent</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="contact.php" class="nav-link">Liên Hệ</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Menu End -->
+            </div>
+            <!-- Logo End -->
+
+            <!-- Thanh tìm kiếm (Begin)-->
+            <div class="col-lg-4 col-md-12 col-12 justify-content-end" id="search-header">
+                <div class="col-lg-12 col-md-12 col-12 justify-content-end d-flex align-items-center" id="account-cart-container">
+                    <!-- Đăng nhập -->
+                    <a href="dangnhap.php" class="nav-link">Đăng nhập</a>
+                    <!-- Đăng ký -->
+                    <a href="dangky.php" class="nav-link">Đăng ký</a>
+                    <!-- Giỏ hàng -->
+                    <a href="giohang.php" class="nav-link">
+                        <i class="fa fa-shopping-cart"></i> Giỏ hàng
+                    </a>
+                </div>
+
+                <div class="col-lg-12 col-md-12 col-12 justify-content-end " id="account-cart-container">
+                    <form class="input-group">
+                        <input
+                            type="text"
+                            placeholder="Tìm kiếm sản phẩm..."
+                            class="input-group-field form-control"
+                            required="" />
+                        <button
+                            type="submit"
+                            class="btn btn-search"
+                            style="background-color: #3a393a">
+                            <span class="fa fa-search" style="color: white"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <!-- Thanh tìm kiếm (End)-->
+        </nav>

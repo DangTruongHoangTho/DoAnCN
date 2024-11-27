@@ -1,168 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Auza Store</title>
-    <link
-      rel="website icon"
-      type="png"
-      href="images/layout/Logo.png"
-      id="logo"
-    />
-    <!-- link ngoài -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-      rel="stylesheet"
-    />
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/owl.carousel.min.css" />
-    <link rel="stylesheet" href="css/detail_pro.css" />
-    <style>
-      /* Add some basic styles for the slideshow */
-      .mySlides {
-        display: none;
-      }
-      .prev,
-      .next {
-        cursor: pointer;
-        position: absolute;
-        top: 50%;
-        width: auto;
-        padding: 16px;
-        margin-top: -22px;
-        color: white;
-        font-weight: bold;
-        font-size: 18px;
-        transition: 0.6s ease;
-        border-radius: 0 3px 3px 0;
-        user-select: none;
-      }
-      .next {
-        right: 0;
-        border-radius: 3px 0 0 3px;
-      }
-      .prev:hover,
-      .next:hover {
-        background-color: rgba(0, 0, 0, 0.8);
-      }
-      .text {
-        color: #f2f2f2;
-        font-size: 15px;
-        padding: 8px 12px;
-        position: absolute;
-        bottom: 8px;
-        width: 100%;
-        text-align: center;
-      }
-      .numbertext {
-        color: #f2f2f2;
-        font-size: 12px;
-        padding: 8px 12px;
-        position: absolute;
-        top: 0;
-      }
-      .demo {
-        cursor: pointer;
-      }
-      .active,
-      .demo:hover {
-        opacity: 1;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="Navigation_Sticky">
-      <nav class="navbar navbar-expand-lg sticky-top">
-        <!-- Logo Begin-->
-        <div class="flex-container row col-lg-9 col-md-12 col-sm-12">
-          <div
-            class="header-right col-xl-2 col-lg-3 col-md-3 col-sm-3 col-3 w-25"
-          >
-            <a href="index.html" class="brand">
-              <img src="./images/layout/Logo_2.png" alt="Logo" title="logo" />
-            </a>
-          </div>
-          <!-- Menu Begin-->
-          <div
-            class="container menu-container col-lg-9 col-md-9 col-sm-9 col-9 text-center justify-content-end m-0 py-10"
-          >
-            <button
-              class="navbar-toggler"
-              type="button"
-              data-toggle="collapse"
-              data-target="#navbarResponsive"
-            >
-              <span class="fa fa-bars"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-              <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                  <a href="about.html" class="nav-link nav_menu">Giới Thiệu </a>
-                </li>
-                <li class="nav-item">
-                  <a href="index.html#burberry" class="nav-link nav_menu">Burberry</a>
-                </li>
-                <li class="nav-item">
-                  <a href="index.html#calvin_klein" class="nav-link nav_menu"
-                    >Calvin Klein</a
-                  >
-                </li>
-                <li class="nav-item">
-                  <a href="index.html#chanel" class="nav-link nav_menu">Chanel</a>
-                </li>
-                <li class="nav-item">
-                  <a href="index.html#gucci" class="nav-link nav_menu">Gucci</a>
-                </li>
-                <li class="nav-item">
-                  <a href="index.html#versace" class="nav-link nav_menu">Versace</a>
-                </li>
-                <li class="nav-item">
-                  <a href="index.html#laurent" class="nav-link nav_menu">Laurrent</a>
-                </li>
-                <li class="nav-item">
-                  <a href="contact.html" class="nav-link nav_menu">Liên Hệ</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <!-- Menu End -->
-        </div>
-        <!-- Logo End -->
-
-        <!-- Thanh tìm kiếm (Begin)-->
-        <div
-          class="col-lg-3 col-md-12 col-12 justify-content-end"
-          id="search-header"
-        >
-          <form class="input-group">
-            <input
-              type="text"
-              placeholder="Tìm kiếm sản phẩm..."
-              class="input-group-field form-control"
-              required=""
-            />
-            <button
-              type="submit"
-              class="btn btn-search"
-              style="background-color: #3a393a"
-            >
-              <span class="fa fa-search" style="color: white"></span>
-            </button>
-          </form>
-        </div>
-        <!-- Thanh tìm kiếm (End)-->
-      </nav>
-
-      <!-- Banner Begin-->
-      <!-- Banner End -->
+<?php include "layout/header_pro.php" ?>
 
       <!-- Content Begin-->
       <main class="main">
@@ -235,6 +71,7 @@
                       </div>
                     </div>
                     <a href="#" class="primary-btn">Đặt hàng</a>
+                    <a href="#" class="primary-btn">Thêm vào giỏ hàng</a>
                   </div>
                 </div>
               </div>
@@ -355,7 +192,7 @@
                   </div>
                   <div role="tabpanel" class="tab-pane" id="tab-usage">
                     <p>
-                      <b>Cách sử dụng được Auza Store đề xuất dành cho bạn:</b>
+                      <b>Cách sử dụng được T&T Store đề xuất dành cho bạn:</b>
                     </p>
                     <ul style="list-style: disc; padding-left: 18px">
                       <li>
@@ -418,7 +255,7 @@
                     <p style="font-size: 15px"><b>Vận chuyển:</b></p>
                     <p><b>TP Hồ Chí Minh</b></p>
                     Các đơn hàng tại Thành phố Hồ Chí Minh có thể chọn phương
-                    thức thanh toán COD hoặc chuyển khoản, Auza Store cam kết
+                    thức thanh toán COD hoặc chuyển khoản, T&T Store cam kết
                     các quận trung tâm quý khách sẽ nhận được hàng chậm nhất
                     trong 3 giờ kể từ khi chốt đơn đối với những đơn hàng trong
                     ngày từ khung giờ 8.30 am đến 22.00 pm. Nếu bạn muốn ship
@@ -426,7 +263,7 @@
                     Facebook, Instagram của chúng tôi để được hỗ trợ.<br /><br />
 
                     <p><b>Các Tỉnh/Thành khác</b></p>
-                    Auza Store thực hiện lên đơn hàng và thanh toán với hình
+                    T&T Store thực hiện lên đơn hàng và thanh toán với hình
                     thức COD (Nhận hàng thanh toán) hoặc chuyển khoản trước khi
                     Ship.<br /><br />
 
@@ -437,13 +274,13 @@
                     bảo các sản phẩm được đến tay khách hàng của chúng tôi một
                     cách tốt nhất.<br /><br />
 
-                    <p><b>Hỗ trợ từ Auza Store</b></p>
+                    <p><b>Hỗ trợ từ T&T Store</b></p>
                     Trong trường hợp các bạn mua tại Thành phố Hồ Chí Minh cần
                     hỗ trợ đóng hàng, hãy liên hệ hotline 1700 1722 hoặc fangape
                     Facebook, Instagram của chúng tôi để được hỗ trợ.
                     <hr />
                     <p style="font-size: 15px"><b>Đổi trả hàng hóa:</b></p>
-                    Hàng hóa Auza Store bán ra đảm bảo là hàng chính hãng 100%,
+                    Hàng hóa T&T Store bán ra đảm bảo là hàng chính hãng 100%,
                     chúng tôi cam kết không bán hàng giả, hàng nhái, hàng không
                     đảm bảo chất lượng.<br /><br />
 
@@ -467,7 +304,7 @@
                       <b>Các trường hợp không được áp dụng đổi lại hàng hóa:</b>
                     </p>
                     <p>
-                      - Sản phẩm không phải do Auza Store cung cấp, không chứng
+                      - Sản phẩm không phải do T&T Store cung cấp, không chứng
                       minh được nguồn gốc của sản phẩm (hóa đơn, thời gian mua
                       hàng)<br />
                       - Sản phẩm được mua quá 10 ngày kể từ khi sản phẩm được
@@ -606,96 +443,4 @@
       </main>
 
       <!-- Content End -->
-
-      <!-- Footer Begin-->
-      <div class="footer" id="contact">
-        <div class="container mt-2">
-          <div class="row justify-content-center text-center">
-            <div class="col-md-3 contact-info">
-              <h2>Thông tin chi tiết</h2>
-              <p><strong>Email:</strong> AuzaStore@gmail.com</p>
-              <p>
-                <strong>Địa chỉ:</strong> 180 Đ. Cao Lỗ, Phường 4, Quận 8, Thành
-                phố Hồ Chí Minh
-              </p>
-            </div>
-            <div class="col-lg-5 col-md-8 col-sm-10">
-              <div class="footer__widget">
-                <h2>Yêu cầu hỗ trợ</h2>
-                <ul>
-                  <li><a href="#">Về chúng tôi</a></li>
-                  <li><a href="#">Về cửa hàng chúng tôi</a></li>
-                  <li><a href="#">Mua sắm an toàn</a></li>
-                  <li><a href="#">Thông tin giao dịch</a></li>
-                  <li><a href="#">Bảo mật</a></li>
-                  <li><a href="#">Hồ sơ trang web</a></li>
-                </ul>
-                <ul>
-                  <li><a href="#">Chúng tôi là ai?</a></li>
-                  <li><a href="#">Dịch vụ của chúng tôi</a></li>
-                  <li><a href="#">Dự án</a></li>
-                  <li><a href="#">Liên hệ</a></li>
-                  <li><a href="#">Sự thay đổi</a></li>
-                  <li><a href="#">Lời cảm ơn</a></li>
-                </ul>
-              </div>
-            </div>
-            <div class="col-lg-4 col-md-12">
-              <div class="footer__widget">
-                <h3>
-                  Nơi Mùi Hương Là <br />
-                  Bạn Đồng Hành
-                </h3>
-
-                <p>
-                  GỌI ĐẶT MUA:
-                  <a class="tel-a-classing call" href="tel:17001722">
-                    <span
-                      ><img
-                        src="//theme.hstatic.net/1000340570/1000964732/14/icon-phone.svg?v=5317"
-                        alt="phone"
-                    /></span>
-                    1700 1722 (8:30 - 22:00)
-                  </a>
-                </p>
-              </div>
-              <h4>Theo dõi chúng tôi</h4>
-              <div class="social-icons mt-3 m-3">
-                <div class="footer__widget__social">
-                  <a href="#"><i class="fa fa-facebook"></i></a>
-                  <a href="#"><i class="fa fa-instagram"></i></a>
-                  <a href="#"><i class="fa fa-twitter"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="separator"></div>
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="footer__copyright">
-                <p>
-                  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | With <i class="fa fa-heart" aria-hidden="true"></i> by AuzaStore</a>
-                  <br />
-                  Họ tên: Đặng Trương Hoàng Thọ <br />
-                  MSSV: DH52111824 <br />
-                  Lớp: D21_TH12 <br />
-                  Thứ 5 - ca 1 <br />
-                  Nhóm: 21
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Footer End -->
-    </div>
-    <script src="js/jquery-3.4.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/jquery.nice-select.min.js"></script>
-    <script src="js/jquery-ui.min.js"></script>
-    <script src="js/jquery.slicknav.js"></script>
-    <script src="js/mixitup.min.js"></script>
-    <script src="js/owl.carousel.min.js"></script>
-    <script src="js/main.js"></script>
-  </body>
-</html>
+      <?php include "layout/footer.php"; ?>

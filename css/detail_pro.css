@@ -32,14 +32,24 @@ body {
   display: flex;
 }
 .brand img {
-  height: 3rem;
+  height: 5rem;
   width: auto;
 }
 .nav_menu:hover {
   color: #f7f7f7;
   background-color: #3a393a;
 }
+#account-cart-container .nav-link {
+  color: #3a393a !important;
+}
+#account-cart-container .nav-link {
+  color: inherit;
+  transition: all 0.3s ease;
+}
 
+#account-cart-container .nav-link:hover {
+  color: #ff6b6b !important;
+}
 /* search bar */
 .search-header {
   display: flex;
