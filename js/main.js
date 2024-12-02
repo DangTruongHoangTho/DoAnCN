@@ -131,3 +131,65 @@ function ajax_giohang(){
 		}
 	});
 }
+
+function handleOrder(event, productId, productName, productPrice) {
+  event.preventDefault();
+
+  const quantityElement = document.getElementById('quantity');
+  const quantity = quantityElement ? parseInt(quantityElement.value, 10) || 1 : 1;
+
+  addToCart(productId, productName, productPrice, quantity);
+  window.location.href = './Order.php';
+}
+
+function addToCart(productId, productName, productPrice, quantity) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  cart.push({ id: productId, name: productName, price: productPrice, quantity });
+  localStorage.setItem('cart', JSON.stringify(cart));
+  alert(`Đã thêm ${quantity} x ${productName} vào giỏ hàng!`);
+}
+
+
+function renderCart() {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let cartContainer = document.getElementById('cart');
+  if (cart.length === 0) {
+      cartContainer.innerHTML = '<p>Giỏ hàng trống</p>';
+  } else {
+      cartContainer.innerHTML = `
+          <table>
+              <thead>
+                  <tr>
+                      <th>Sản phẩm</th>
+                      <th>Giá</th>
+                      <th>Số lượng</th>
+                      <th>Tổng</th>
+                      <th>Hành động</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  ${cart.map((item, index) => `
+                      <tr>
+                          <td>${item.name}</td>
+                          <td>${item.price} VND</td>
+                          <td>${item.quantity}</td>
+                          <td>${item.price * item.quantity} VND</td>
+                          <td>
+                              <button onclick="removeFromCart(${index})">Hủy</button>
+                          </td>
+                      </tr>
+                  `).join('')}
+              </tbody>
+          </table>
+      `;
+  }
+}
+
+function removeFromCart(index) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  cart.splice(index, 1); // Xóa sản phẩm tại vị trí `index`
+  localStorage.setItem('cart', JSON.stringify(cart)); // Cập nhật lại giỏ hàng
+  renderCart(); // Hiển thị lại giỏ hàng
+}
+
+
