@@ -386,7 +386,6 @@
                 <div class="col-lg-3 col-md-4 col-sm-6">
                   <div class="product__item">
                     <div
-                  
                       class="product__item__pic set-bg"
                       style="
                         background-image: url('images/product/VERSACE/Versace_Eros_Pour_Femme_Eau_de_Parfum_1.webp');

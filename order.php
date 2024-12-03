@@ -90,6 +90,7 @@
             <button type="submit">Đặt Hàng</button>
         </form>
     </div>
+    
     <script src="./js/main.js"></script>
 </body>
 </html>
