@@ -43,22 +43,34 @@
                                 <a href="about.php" class="nav-link">Giới Thiệu </a>
                             </li>
                             <li class="nav-item">
-                                <a href="index.php#burberry" class="nav-link">Burberry</a>
+                                <div class="dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle">
+                                        Nước hoa nam
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <a href="index.php#burberry" class="dropdown-item">Burberry</a>
+                                        <a href="index.php#calvin_klein" class="dropdown-item">Calvin Klein</a>
+                                        <a href="index.php#chanel" class="dropdown-item">Chanel</a>
+                                        <a href="index.php#gucci" class="dropdown-item">Gucci</a>
+                                        <a href="index.php#versace" class="dropdown-item">Versace</a>
+                                        <a href="index.php#laurent" class="dropdown-item">Laurrent</a>
+                                    </div>
+                                </div>
                             </li>
                             <li class="nav-item">
-                                <a href="index.php#calvin_klein" class="nav-link">Calvin Klein</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="index.php#chanel" class="nav-link">Chanel</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="index.php#gucci" class="nav-link">Gucci</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="index.php#versace" class="nav-link">Versace</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="index.php#laurent" class="nav-link">Laurrent</a>
+                            <div class="dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle">
+                                        Nước hoa nữ
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <a href="index.php#burberry" class="dropdown-item">Burberry</a>
+                                        <a href="index.php#calvin_klein" class="dropdown-item">Calvin Klein</a>
+                                        <a href="index.php#chanel" class="dropdown-item">Chanel</a>
+                                        <a href="index.php#gucci" class="dropdown-item">Gucci</a>
+                                        <a href="index.php#versace" class="dropdown-item">Versace</a>
+                                        <a href="index.php#laurent" class="dropdown-item">Laurrent</a>
+                                    </div>
+                                </div>
                             </li>
                             <li class="nav-item">
                                 <a href="contact.php" class="nav-link">Liên Hệ</a>
