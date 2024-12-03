@@ -444,6 +444,3 @@
 
       <!-- Content End -->
 <?php include "layout/footer.php"; ?>
-
-<!-- test -->
- <!-- gdkasj -->
