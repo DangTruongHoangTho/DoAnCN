@@ -71,7 +71,7 @@
                       </div>
                     </div>
                     <a href="./Order.php" onclick="handleOrder(event, 2, 'Burberry Eau de Parfum 100ml', 6500000)" class="primary-btn">Đặt hàng</a>
-                    <a href="#" class="primary-btn">Thêm vào giỏ hàng</a>
+                    <a href="#" onclick="handleOrder(event, 2, 'Burberry Eau de Parfum 100ml', 6500000)" class="primary-btn">Thêm vào giỏ hàng</a>
                   </div>
                 </div>
               </div>
