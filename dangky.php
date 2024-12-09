@@ -5,8 +5,8 @@ $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Lấy dữ liệu từ form
-    $last_name = trim($_POST['last_name']);
     $first_name = trim($_POST['first_name']);
+    $last_name = trim($_POST['last_name']);
     $email = trim($_POST['email']);
     $phone = trim($_POST['phone']);
     $password = $_POST['password'];
@@ -22,40 +22,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (!preg_match('/^[0-9]{10}$/', $phone)) {
         $error = "Số điện thoại phải là 10 chữ số.";
     } else {
-        // // Kết nối cơ sở dữ liệu
-        // $servername = "localhost";
-        // $username = "root";
-        // $dbpassword = "";
-        // $dbname = "user_database";
+        // Kết nối cơ sở dữ liệu
+        require 'database/conect.php';
 
-        // $conn = new mysqli($servername, $username, $dbpassword, $dbname);
-        // if ($conn->connect_error) {
-        //     die("Kết nối thất bại: " . $conn->connect_error);
-        // }
+        function isEmailExists($conn, $email)
+        {
+            $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
+            $stmt->bindParam(":email", $email);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC) ? true : false;
+        }
+        $email = $_POST['email'];        
+        $first_name = $_POST['first_name'];
+        $last_name = $_POST['last_name'];
+        $phone = $_POST['phone'];
+        $password = $_POST['password'];
+        $dob = $_POST['dob'];
 
-        // // Kiểm tra email đã tồn tại
-        // $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-        // $stmt->bind_param("s", $email);
-        // $stmt->execute();
-        // $result = $stmt->get_result();
-        // if ($result->num_rows > 0) {
-        //     $error = "Email đã được sử dụng. Vui lòng chọn email khác.";
-        // } else {
-        //     // Mã hóa mật khẩu và thêm vào cơ sở dữ liệu
-        //     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-        //     $stmt = $conn->prepare("INSERT INTO users (last_name, first_name, email, phone, password, dob) VALUES (?, ?, ?, ?, ?, ?)");
-        //     $stmt->bind_param("ssssss", $last_name, $first_name, $email, $phone, $hashed_password, $dob);
+        if (isEmailExists($conn, $email)) {
+            $error = "Email đã được sử dụng. Vui lòng chọn email khác.";
+        } else {
+            // Mã hóa mật khẩu và thêm vào cơ sở dữ liệu
+            $hashed_password = hash('sha256', $password);
 
-        //     if ($stmt->execute()) {
-        //         $success = "Đăng ký thành công!";
-        //     } else {
-        //         $error = "Có lỗi xảy ra. Vui lòng thử lại.";
-        //     }
-        // }
+            $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, phone, password, dob) 
+                            VALUES (:first_name, :last_name, :email, :phone, :password, :dob)");
+            $stmt->bindParam(":first_name", $first_name);
+            $stmt->bindParam(":last_name", $last_name);
+            $stmt->bindParam(":email", $email);
+            $stmt->bindParam(":phone", $phone);
+            $stmt->bindParam(":password", $hashed_password);
+            $stmt->bindParam(":dob", $dob);
 
-        // // Đóng kết nối
-        // $stmt->close();
-        // $conn->close();
+            if ($stmt->execute()) {
+                $success = "Đăng ký thành công!";
+            } else {
+                $error = "Có lỗi xảy ra. Vui lòng thử lại.";
+            }
+        }
+
+        // Đóng kết nối (không cần thiết vì PDO tự đóng khi script kết thúc)
+        $conn = null;
     }
 }
 ?>
@@ -95,11 +102,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="success"><?= htmlspecialchars($success) ?></div>
         <?php endif; ?>
         <form action="dangky.php" method="post">
-            <label for="last_name">Họ*</label>
-            <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($last_name ?? '') ?>" placeholder="Họ" required>
+            <label for="first_name">Họ*</label>
+            <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($first_name ?? '') ?>" placeholder="Họ" required>
 
-            <label for="first_name">Tên*</label>
-            <input type="text" id="first_name" name="first_name" value="<?= htmlspecialchars($first_name ?? '') ?>" placeholder="Tên" required>
+            <label for="last_name">Tên*</label>
+            <input type="text" id="last_name" name="last_name" value="<?= htmlspecialchars($last_name ?? '') ?>" placeholder="Tên" required>
 
             <label for="email">Email*</label>
             <input type="email" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?>" placeholder="Email" required>
