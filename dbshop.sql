@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 03, 2024 at 04:49 AM
+-- Generation Time: Dec 04, 2024 at 08:21 AM
 -- Server version: 8.3.0
 -- PHP Version: 8.2.18
 
@@ -150,8 +150,8 @@ CREATE TABLE IF NOT EXISTS `products` (
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `password` varchar(255) NOT NULL,
   `phone` varchar(10) NOT NULL,
   `address` text NOT NULL,
