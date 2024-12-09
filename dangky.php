@@ -37,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $last_name = $_POST['last_name'];
         $phone = $_POST['phone'];
         $password = $_POST['password'];
-        $dob = $_POST['dob'];
 
         if (isEmailExists($conn, $email)) {
             $error = "Email đã được sử dụng. Vui lòng chọn email khác.";
@@ -45,23 +44,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Mã hóa mật khẩu và thêm vào cơ sở dữ liệu
             $hashed_password = hash('sha256', $password);
 
-            $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, phone, password, dob) 
-                            VALUES (:first_name, :last_name, :email, :phone, :password, :dob)");
+            $stmt = $conn->prepare("INSERT INTO users (email, first_name, last_name, password_hash, phone) 
+                            VALUES (:email, :first_name, :last_name, :password_hash, :phone)");
+            $stmt->bindParam(":email", $email);
             $stmt->bindParam(":first_name", $first_name);
             $stmt->bindParam(":last_name", $last_name);
-            $stmt->bindParam(":email", $email);
+            $stmt->bindParam(":password_hash", $hashed_password);
             $stmt->bindParam(":phone", $phone);
-            $stmt->bindParam(":password", $hashed_password);
-            $stmt->bindParam(":dob", $dob);
 
             if ($stmt->execute()) {
-                $success = "Đăng ký thành công!";
+                echo "<script>
+                    alert('Đăng ký thành công!');
+                    window.location.href = 'dangnhap.php';
+                    </script>";
+                // Reset dữ liệu sau khi thành công
+                $first_name = $last_name = $email = $phone = '';
+
             } else {
                 $error = "Có lỗi xảy ra. Vui lòng thử lại.";
             }
         }
 
-        // Đóng kết nối (không cần thiết vì PDO tự đóng khi script kết thúc)
+        // Đóng kết nối
         $conn = null;
     }
 }

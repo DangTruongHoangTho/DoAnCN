@@ -13,43 +13,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Vui lòng điền đầy đủ các trường bắt buộc.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Địa chỉ email không hợp lệ.";
-    } elseif ($password !== $confirm_password) {
-        $error = "Mật khẩu không khớp.";
     } else {
-        // // Kết nối cơ sở dữ liệu
-        // $servername = "localhost";
-        // $username = "root";
-        // $dbpassword = "";
-        // $dbname = "user_database";
+        require 'database/conect.php';
 
-        // $conn = new mysqli($servername, $username, $dbpassword, $dbname);
-        // if ($conn->connect_error) {
-        //     die("Kết nối thất bại: " . $conn->connect_error);
-        // }
+        // Kiểm tra email có tồn tại không
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->bindParam(":email", $email);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // // Kiểm tra email đã tồn tại
-        // $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-        // $stmt->bind_param("s", $email);
-        // $stmt->execute();
-        // $result = $stmt->get_result();
-        // if ($result->num_rows > 0) {
-        //     $error = "Email đã được sử dụng. Vui lòng chọn email khác.";
-        // } else {
-        //     // Mã hóa mật khẩu và thêm vào cơ sở dữ liệu
-        //     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-        //     $stmt = $conn->prepare("INSERT INTO users (last_name, first_name, email, phone, password, dob) VALUES (?, ?, ?, ?, ?, ?)");
-        //     $stmt->bind_param("ssssss", $last_name, $first_name, $email, $phone, $hashed_password, $dob);
+        $hashed_password = hash('sha256', $password);
+        if ($user) {
+            // So sánh mật khẩu đã nhập với mật khẩu hash trong CSDL
+            $hashed_password = hash('sha256', $password);
 
-        //     if ($stmt->execute()) {
-        //         $success = "Đăng ký thành công!";
-        //     } else {
-        //         $error = "Có lỗi xảy ra. Vui lòng thử lại.";
-        //     }
-        // }
+            if ($hashed_password === $user['password_hash']) {
+                // Đăng nhập thành công
+                session_start();
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
+                $success = "Đăng nhập thành công!";
+                header("Location: index.php"); // Chuyển hướng đến trang chủ
+                exit;
+            } else {
+                $error = "Sai mật khẩu. Vui lòng thử lại.";
+            }
+        } else {
+            $error = "Email không tồn tại trong hệ thống.";
+        }
 
-        // // Đóng kết nối
-        // $stmt->close();
-        // $conn->close();
+        $conn = null; // Đóng kết nối cơ sở dữ liệu
     }
 }
 ?>
