@@ -87,12 +87,37 @@ body {
   display: block;
 }
 /* search bar */
-.search-header {
-  display: flex;
+.search-button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  color: black;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 50%;
+  cursor: pointer;
 }
-.btn-search {
-  float: right;
-  display: flex;
+
+.search-button i {
+  font-size: 16px;
+}
+.search-button:hover {
+  color: black; /* Màu khi hover */
+}
+.search-bar button[type="submit"] {
+  all: unset;
+}
+.search-bar button[type="submit"].search-button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  color: black;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 /* banner */

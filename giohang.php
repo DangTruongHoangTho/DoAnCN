@@ -1,6 +1,4 @@
 <?php
-session_start();
-// include 'db.php';
 
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
@@ -15,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
 $total = 0;
 ?>
 
-<?php include "layout/header.php"; ?>
+<?php include "layout/header_giohang.php"; ?>
     <header>
         <h1>Your Shopping Cart</h1>
     </header>
@@ -23,13 +21,13 @@ $total = 0;
         <div class="cart">
             <?php foreach ($_SESSION['cart'] as $id => $quantity): ?>
                 <?php
-                $stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
-                $stmt->bind_param("i", $id);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $product = $result->fetch_assoc();
-                $item_total = $product['price'] * $quantity;
-                $total += $item_total;
+                // $stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
+                // $stmt->bind_param("i", $id);
+                // $stmt->execute();
+                // $result = $stmt->get_result();
+                // $product = $result->fetch_assoc();
+                // $item_total = $product['price'] * $quantity;
+                // $total += $item_total;
                 ?>
                 <div class="cart-item">
                     <h2><?php echo $product['name']; ?></h2>

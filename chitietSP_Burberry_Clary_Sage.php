@@ -1,80 +1,66 @@
-<?php include "layout/header_pro.php" ?>
+<?php 
+    include "layout/header_pro.php"; 
+    $productId = $_GET['id'] ?? 1;
+    $stmt = $conn->prepare("SELECT p.*, b.name AS brand_name
+                            FROM products p
+                            JOIN brands b ON p.brand_id = b.id
+                            WHERE p.id = ?");
+    $stmt->execute([$productId]);
+    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$product) {
+        die("Sản phẩm không tồn tại.");
+    }
+
+    $stmtRelated = $conn->prepare("SELECT * FROM products WHERE brand_id = ? AND id != ? LIMIT 4");
+    $stmtRelated->execute([$product['brand_id'], $productId]);
+    $relatedProducts = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
+?>
 
       <!-- Content Begin-->
       <main class="main">
         <div class="page-template noneBackground">
           <section class="block-products" id="burberry">
-            <div class="container p-row">
-              <div class="row">
-                <div class="col-sm-4 col-md-4 col-xs-6 col-lg-5">
-                  <div class="p-item">
-                    <!-- Full-width images with number text -->
-                    <div class="mySlides">
-                      <div class="numbertext">1 / 2</div>
-                      <img
-                        src="images/product/BURBERRY/Burberry_Clary_Sage_1.webp"
-                        style="width: 100%; height: 400px"
-                      />
+          <div class="container p-row">
+                <div class="row">
+                    <div class="col-sm-4 col-md-4 col-xs-6 col-lg-5">
+                      <?php $imageArray = explode(', ', $product['images']); // Tách chuỗi thành mảng
+                          if (!empty($product['images'])) {
+                            foreach ($imageArray as $index => $image) { ?>
+                              <div class="p-item">
+                                <div class="mySlides">
+                                  <div class="numbertext"><?php echo ($index + 1) . " / " . count($imageArray); ?></div>
+                                  <img src="images/product/BURBERRY/<?php echo htmlspecialchars(trim($image)); ?>" style="width: 100%; height: 400px;" />
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="column">
+                                  <img class="demo cursor" src="images/product/BURBERRY/<?php echo htmlspecialchars(trim($image)); ?>" style="background-color: white; width: 200%" onclick="currentSlide(<?php echo $index + 1; ?>)" />
+                                </div>
+                              </div>
+                      <?php } 
+                              }?>
                     </div>
+                    <div class="col-sm-4 col-md-4 col-xs-6 col-lg-6">
+                        <div class="product__details__text">
+                            <h3><?php echo htmlspecialchars($product['name']); ?></h3>
+                            <ul>
+                                <li>Thương hiệu: <span><strong><?php echo htmlspecialchars($product['brand_name']); ?></strong></span></li>
+                                <li></li>
+                            </ul>
 
-                    <div class="mySlides">
-                      <div class="numbertext">2 / 2</div>
-                      <img
-                        src="images/product/BURBERRY/Burberry_Clary_Sage_2.webp"
-                        style="width: 100%; height: 400px"
-                      />
-                    </div>
-                  </div>
-                  <!-- Thumbnail images -->
-                  <div class="row">
-                    <div class="column">
-                      <img
-                        class="demo cursor"
-                        src="images/product/BURBERRY/Burberry_Clary_Sage_1.webp"
-                        style="background-color: white; width: 200%"
-                        onclick="currentSlide(1)"
-                      />
-                    </div>
-                    <div class="column">
-                      <img
-                        class="demo cursor"
-                        src="images/product/BURBERRY/Burberry_Clary_Sage_2.webp"
-                        style="background-color: white; width: 200%"
-                        onclick="currentSlide(2)"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-4 col-md-4 col-xs-6 col-lg-6">
-                  <div class="product__details__text">
-                    <h3>Burberry Clary Sage</h3>
-                    <div class="product__details__rating">
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star-half-o"></i>
-                      <span>(3 đánh giá)</span>
-                    </div>
-                    <ul>
-                      <li>
-                        Thương hiệu: <span><strong>Burberry</strong></span>
-                      </li>
-                      <li>Eau de Parfum 100ml</li>
-                    </ul>
-                    <div class="product__details__price">6.500.000 ₫</div>
-                    <div class="product__details__quantity">
-                      <div class="quantity">
-                        <div class="pro-qty">
-                          <input type="text" id="quantity" min="1" value="1" />
+                            <div class="product__details__price"><?php echo number_format($product['price'], 0, ',', '.') . " ₫"; ?></div>
+                            <div class="product__details__quantity">
+                                <div class="quantity">
+                                    <div class="pro-qty">
+                                        <input type="text" id="quantity" min="1" value="1" />
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="./Order.php?id=<?php echo $productId; ?>" class="primary-btn">Đặt hàng</a>
                         </div>
-                      </div>
                     </div>
-                    <a href="./Order.php" onclick="handleOrder(event, 2, 'Burberry Eau de Parfum 100ml', 6500000)" class="primary-btn">Đặt hàng</a>
-                    <a href="#" onclick="handleOrder(event, 2, 'Burberry Eau de Parfum 100ml', 6500000)" class="primary-btn">Thêm vào giỏ hàng</a>
-                  </div>
                 </div>
-              </div>
             </div>
           </section>
           <div class="col-lg-12">
@@ -124,7 +110,7 @@
                         class="product-attribute-list__item dl-horizontal attr-brand"
                       >
                         <dt><b>Mã hàng</b></dt>
-                        <dd id="prod_variant_detail_sku">110100203048</dd>
+                        <dd id="prod_variant_detail_sku"><?php echo htmlspecialchars($product['id']); ?></dd>
                       </dl>
                       <dl
                         class="product-attribute-list__item dl-horizontal attr-brand"
@@ -137,55 +123,35 @@
 
                       <dl class="product-attribute-list__item dl-horizontal">
                         <dt><b>Xuất xứ</b></dt>
-                        <dd>Anh, Pháp, Tây Ban Nha</dd>
+                        <dd><?php echo htmlspecialchars($product['origin']); ?></dd>
                       </dl>
 
                       <dl class="product-attribute-list__item dl-horizontal">
                         <dt><b>Năm phát hành</b></dt>
-                        <dd>2017</dd>
+                        <dd><?php echo htmlspecialchars($product['year_of_release']); ?></dd>
                       </dl>
 
                       <dl class="product-attribute-list__item dl-horizontal">
                         <dt><b>Nhóm hương</b></dt>
-                        <dd>Bạch đậu khấu, Cây xô thơm, Thảo mộc</dd>
+                        <dd><?php echo htmlspecialchars($product['incense_group']); ?></dd>
                       </dl>
 
                       <dl class="product-attribute-list__item dl-horizontal">
                         <dt><b>Phong cách</b></dt>
-                        <dd>Tinh tế, Thanh lịch, Sang trọng</dd>
+                        <dd><?php echo htmlspecialchars($product['style']); ?></dd>
                       </dl>
                     </div>
                     <div class="product-description">
                       <div class="description-content">
                         <div class="description-productdetail collapsed">
-                          <p>
-                            Hương đầu: Bạch đậu khấu, Xô thơm<br />Hương giữa:
-                            Nhựa cây, Da thuộc<br />Hương cuối: Xô thơm, Cỏ khô,
-                            Cỏ hương bài
-                          </p>
-                          <p>
-                            Nằm trong bộ sưu tập “Bespoke" của nhà Burberry,
-                            Clary Sage là một tông màu trầm của nước hoa với vẻ
-                            đẹp sáng đặc, sâu thẳm đậm vị gỗ của mình. Ở đây,
-                            hương gỗ không đơn thuần dừng lại ở việc trầm và ấm,
-                            mà nó ngúng nguẩy, toát lên ánh nhìn kén chọn và
-                            kiêu kỳ hơn nhiều.
-                          </p>
-                          <p>
-                            Ngay từ tầng hương đầu tiên, Xô thơm đã xuất hiện,
-                            chiếm lấy khứu giác với tông vị thô ráp, hoang dại
-                            đặc trưng của mình. Để rồi Nhựa cây cùng Da thuộc
-                            dần dà được thêm vào như gọt xén bớt đi nét 'khó
-                            chiều' ấy, tung hứng chút ngọt hăng và khiến tổng
-                            thể trở nên có chiều sâu hơn hẳn.&nbsp;
-                          </p>
-                          <p>
-                            Cho đến cuối, Burberry Clary Sage vẫn không làm mất
-                            đi Xô thơm - nét đẹp phóng túng, tự do làm nên màu
-                            sắc chính cho mùi hương - kèm theo chút điềm nhiên
-                            Cỏ khô và Cỏ hương bài như một cách khẳng định sự
-                            'ngỗ ngược' ngầm mà mình đang mang.&nbsp;<br />&nbsp;
-                          </p>
+                            <?php 
+                              $paragraphs = explode("\n", $product['description']); // Tách chuỗi thành mảng các đoạn
+                              foreach ($paragraphs as $paragraph) {
+                                  if (trim($paragraph)) { // Bỏ qua đoạn trống
+                                      echo '<p>' . htmlspecialchars($paragraph) . '</p>';
+                                  }
+                              }
+                            ?>
                         </div>
                       </div>
                     </div>
@@ -369,73 +335,18 @@
                 </div>
               </div>
               <div class="row">
+            <?php foreach ($relatedProducts as $related) { ?>
                 <div class="col-lg-3 col-md-4 col-sm-6">
-                  <div class="product__item">
-                    <div
-                      class="product__item__pic set-bg"
-                      style="
-                        background-image: url('images/product/LAURENT/Yves_Saint_Laurent_Black_Opium_1.jpg');
-                      "
-                    ></div>
-                    <div class="product__item__text">
-                      <h6><a href="#">Yves Saint Laurent Black Opium</a></h6>
-                      <h5>3.500.000 ₫</h5>
+                    <div class="product__item">
+                        <div class="product__item__pic set-bg" style="background-image: url('images/product/<?php echo $related['images']; ?>');"></div>
+                        <div class="product__item__text">
+                            <h6><a href="product.php?id=<?php echo $related['id']; ?>"><?php echo htmlspecialchars($related['name']); ?></a></h6>
+                            <h5><?php echo number_format($related['price'], 0, ',', '.') . " ₫"; ?></h5>
+                        </div>
                     </div>
-                  </div>
                 </div>
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                  <div class="product__item">
-                    <div
-                      class="product__item__pic set-bg"
-                      style="
-                        background-image: url('images/product/VERSACE/Versace_Eros_Pour_Femme_Eau_de_Parfum_1.webp');
-                      "
-                    ></div>
-                    <div class="product__item__text">
-                      <h6>
-                        <a href="#">Versace Eros Pour Femme Eau de Parfum</a>
-                      </h6>
-                      <h5>2.300.000 ₫</h5>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                  <div class="product__item">
-                    <div
-                      class="product__item__pic set-bg"
-                      style="
-                        background-image: url('images/product/GUCCI/Gucci_Bloom_Ambrosia_di_Fiori_Eau_de_Parfum_for_Woman_1.webp');
-                      "
-                    ></div>
-                    <div class="product__item__text">
-                      <h6>
-                        <a href="#"
-                          >Gucci Bloom Ambrosia di Fiori Eau de Parfum for
-                          Woman</a
-                        >
-                      </h6>
-                      <h5>3.600.000 ₫</h5>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                  <div class="product__item">
-                    <div
-                      class="product__item__pic set-bg"
-                      style="
-                        background-image: url('images/product/CALVIN_KLEIN/Calvin_Klein_CK_Be_1.webp');
-                      "
-                    ></div>
-                    <div class="product__item__text">
-                      <h6><a href="#">Calvin Klein CK Be</a></h6>
-                      <div class="text__sale">
-                        <h5>1.380.000 ₫</h5>
-                      </div>
-                      <h5 class="text__price">1.080.000 ₫</h5>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <?php } ?>
+        </div>
             </div>
           </section>
           <!-- Related Product Section End -->

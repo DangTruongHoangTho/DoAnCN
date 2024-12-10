@@ -123,14 +123,38 @@ main {
 }
 
 /* search bar */
-.search-header {
-  display: flex;
-}
-.btn-search {
-  float: right;
-  display: flex;
+.search-button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  color: black;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
+.search-button i {
+  font-size: 16px;
+}
+.search-button:hover {
+  color: black; /* Màu khi hover */
+}
+.search-bar button[type="submit"] {
+  all: unset;
+}
+.search-bar button[type="submit"].search-button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  color: black;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
 /* banner */
 .carousel-inner {
   max-height: 40rem !important;

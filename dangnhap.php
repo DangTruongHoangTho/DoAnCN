@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Địa chỉ email không hợp lệ.";
     } else {
+        session_start();
         require 'database/conect.php';
 
         // Kiểm tra email có tồn tại không
@@ -29,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($hashed_password === $user['password_hash']) {
                 // Đăng nhập thành công
-                session_start();
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
                 $success = "Đăng nhập thành công!";

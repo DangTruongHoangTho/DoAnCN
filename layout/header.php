@@ -1,3 +1,33 @@
+<?php
+session_start();
+require 'database/conect.php';
+function getCartItems()
+{
+    return $_SESSION['cart'] ?? [];
+}
+
+function getCartTotalItems()
+{
+    $totalItems = 0;
+    if (isset($_SESSION['cart'])) {
+        foreach ($_SESSION['cart'] as $item) {
+            $totalItems += $item['quantity'];
+        }
+    }
+    return $totalItems;
+}
+
+function getCartTotalPrice()
+{
+    $totalPrice = 0;
+    if (isset($_SESSION['cart'])) {
+        foreach ($_SESSION['cart'] as $item) {
+            $totalPrice += $item['price'] * $item['quantity'];
+        }
+    }
+    return $totalPrice;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,11 +59,11 @@
         <nav class="navbar navbar-expand-lg sticky-top">
             <!-- Logo Begin-->
             <div class="flex-container row col-lg-8 col-md-12 col-sm-12">
-                <div class="header-right col-xl-2 col-lg-3 col-md-3 col-sm-3 col-3 w-25">
+                <div class="header-right col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2 w-25">
                     <a href="index.php" class="brand"><img src="images/banner/Logo.png" alt="Logo" title="logo" /></a>
                 </div>
                 <!-- Menu Begin-->
-                <div class="container menu-container col-lg-9 col-md-9 col-sm-9 col-9 text-center justify-content-end m-0 py-10">
+                <div class="container menu-container col-lg-7 col-md-9 col-sm-9 col-9 text-center justify-content-end m-0 py-10">
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive">
                         <span class="fa fa-bars"></span>
                     </button>
@@ -58,7 +88,7 @@
                                 </div>
                             </li>
                             <li class="nav-item">
-                            <div class="dropdown">
+                                <div class="dropdown">
                                     <a href="#" class="nav-link dropdown-toggle">
                                         Nước hoa nữ
                                     </a>
@@ -83,40 +113,64 @@
             <!-- Logo End -->
 
             <!-- Thanh tìm kiếm (Begin)-->
-            <div class="col-lg-4 col-md-12 col-12 justify-content-end" id="search-header">
-                <div class="col-lg-12 col-md-12 col-12 justify-content-end d-flex align-items-center" id="account-cart-container">
-                    <div class="dropdown">
-                        <a href="#" class="nav-link dropdown-toggle">
-                            <i class="fa fa-user" aria-hidden="true"></i> Đăng nhập
-                        </a>
-                        <div class="dropdown-menu">
-                            <a href="dangnhap.php" class="dropdown-item">Đăng nhập</a>
-                            <a href="dangky.php" class="dropdown-item">Đăng ký</a>
+            <div class="col-lg-3 col-md-12 col-12 justify-content-end" id="search-header">
+                <div class="col-lg-12 col-md-12 col-12 justify-content d-flex align-items-center" id="account-cart-container">
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <!-- Khi đã đăng nhập -->
+                        <div class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">
+                                <i class="fa fa-user" aria-hidden="true"></i> Hi, <?= htmlspecialchars($_SESSION['user_name']) ?>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="thongtin.php" class="dropdown-item">Thông tin tài khoản</a>
+                                <a href="dangxuat.php" class="dropdown-item">Đăng xuất</a>
+                            </div>
                         </div>
-                    </div>
+                    <?php else: ?>
+                        <!-- Khi chưa đăng nhập -->
+                        <div class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">
+                                <i class="fa fa-user" aria-hidden="true"></i> Đăng nhập
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="dangnhap.php" class="dropdown-item">Đăng nhập</a>
+                                <a href="dangky.php" class="dropdown-item">Đăng ký</a>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                     <div class="dropdown">
                         <a href="giohang.php" class="nav-link">
-                            <i class="fa fa-shopping-cart"></i> Giỏ hàng
+                            <i class="fa fa-shopping-cart"></i>
+                            <span class="badge badge-danger" id="cart-count"><?= getCartTotalItems() ?></span>
                         </a>
                         <div class="dropdown-menu">
-                            chua co san pham nao trong gio hang
+                            <?php $cartItems = getCartItems(); ?>
+                            <?php if (!empty($cartItems)): ?>
+                                <?php foreach ($cartItems as $item): ?>
+                                    <div class="item">
+                                        <p><strong><?= htmlspecialchars($item['name']) ?></strong></p>
+                                        <p>Giá: <?= number_format($item['price']) ?> VND</p>
+                                        <p>Số lượng: <?= $item['quantity'] ?></p>
+                                    </div>
+                                <?php endforeach; ?>
+                                <div class="total">
+                                    Tổng cộng: <?= number_format(getCartTotalPrice()) ?> VND
+                                </div>
+                            <?php else: ?>
+                                <div class="empty">Chưa có sản phẩm nào trong giỏ hàng</div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-12 col-md-12 col-12 justify-content-end " id="account-cart-container">
-                    <form class="input-group">
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm sản phẩm..."
-                            class="input-group-field form-control"
-                            required="" />
-                        <button
-                            type="submit"
-                            class="btn btn-search"
-                            style="background-color: #3a393a">
-                            <span class="fa fa-search" style="color: white"></span>
-                        </button>
+                    <form class="input-group">    
+                        <div class="search-bar position-relative">
+                            <input type="text" class="form-control search-input" placeholder="Tìm kiếm" required="">
+                            <button type="submit" class="btn search-button">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
