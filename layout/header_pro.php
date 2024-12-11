@@ -1,7 +1,18 @@
 <?php
-    session_start();
-    require 'database/conect.php';
-    function getCartItems()
+session_start();
+require 'database/conect.php';
+$sql = "SELECT categories.name AS category_name, 
+            brands.name AS brand_name FROM brands INNER JOIN categories
+            ON brands.category_id = categories.id
+            ORDER BY categories.name, brands.name";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$categoryBrands = [];
+foreach ($categories as $category) {
+    $categoryBrands[$category['category_name']][] = $category['brand_name'];
+}
+function getCartItems()
 {
     return $_SESSION['cart'] ?? [];
 }
@@ -53,6 +64,7 @@ function getCartTotalPrice()
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/detail_pro.css" />
 </head>
+
 <body>
     <div class="Navigation_Sticky">
         <nav class="navbar navbar-expand-lg sticky-top">
@@ -72,34 +84,18 @@ function getCartTotalPrice()
                                 <a href="about.php" class="nav-link">Giới Thiệu </a>
                             </li>
                             <li class="nav-item">
-                                <div class="dropdown">
-                                    <a href="#" class="nav-link dropdown-toggle">
-                                        Nước hoa nam
-                                    </a>
-                                    <div class="dropdown-menu">
-                                        <a href="index.php#burberry" class="dropdown-item">Burberry</a>
-                                        <a href="index.php#calvin_klein" class="dropdown-item">Calvin Klein</a>
-                                        <a href="index.php#chanel" class="dropdown-item">Chanel</a>
-                                        <a href="index.php#gucci" class="dropdown-item">Gucci</a>
-                                        <a href="index.php#versace" class="dropdown-item">Versace</a>
-                                        <a href="index.php#laurent" class="dropdown-item">Laurrent</a>
+                                <?php foreach ($categoryBrands as $categoryName => $brands): ?>
+                                    <div class="dropdown">
+                                        <a href="#" class="nav-link dropdown-toggle">
+                                            <?php echo htmlspecialchars($categoryName); ?>
+                                        </a>
+                                        <div class="dropdown-menu">
+                                            <?php foreach ($brands as $brand): ?>
+                                                <a href="#" class="dropdown-item"><?php echo htmlspecialchars($brand); ?></a>
+                                            <?php endforeach; ?>
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
-                            <li class="nav-item">
-                            <div class="dropdown">
-                                    <a href="#" class="nav-link dropdown-toggle">
-                                        Nước hoa nữ
-                                    </a>
-                                    <div class="dropdown-menu">
-                                        <a href="index.php#burberry" class="dropdown-item">Burberry</a>
-                                        <a href="index.php#calvin_klein" class="dropdown-item">Calvin Klein</a>
-                                        <a href="index.php#chanel" class="dropdown-item">Chanel</a>
-                                        <a href="index.php#gucci" class="dropdown-item">Gucci</a>
-                                        <a href="index.php#versace" class="dropdown-item">Versace</a>
-                                        <a href="index.php#laurent" class="dropdown-item">Laurrent</a>
-                                    </div>
-                                </div>
+                                <?php endforeach; ?>
                             </li>
                             <li class="nav-item">
                                 <a href="contact.php" class="nav-link">Liên Hệ</a>
@@ -163,7 +159,7 @@ function getCartTotalPrice()
                 </div>
 
                 <div class="col-lg-12 col-md-12 col-12 justify-content-end " id="account-cart-container">
-                    <form class="input-group">    
+                    <form class="input-group">
                         <div class="search-bar position-relative">
                             <input type="text" class="form-control search-input" placeholder="Tìm kiếm  " required="">
                             <button type="submit" class="btn search-button">

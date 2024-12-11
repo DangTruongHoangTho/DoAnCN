@@ -178,6 +178,35 @@ main {
 }
 
 /* product */
+.carousel-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+} 
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #fff;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  z-index: 1;
+}
+
+.carousel-btn.left {
+  left: -25px;
+}
+
+.carousel-btn.right {
+  right: -25px;
+}
+
 /* Base styling for the product sections */
 .block-products {
   padding: 50px 0;
@@ -201,6 +230,8 @@ main {
   margin-bottom: 30px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  padding: 20px 15px;
 }
 
 .p-item:hover {
@@ -212,6 +243,33 @@ main {
   border-bottom: 1px solid #ebebeb;
 }
 
+.p-item .pro-vendor {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.p-item .pro-name {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 600;
+}
+
+.p-item .pro-name a {
+  color: inherit;
+  transition: all 0.3s ease;
+}
+
+.p-item .pro-name a:hover {
+  color: #ff6b6b;
+}
+
+.p-item .pro-price {
+  font-size: 20px;
+  color: #ff6b6b;
+  font-weight: 700;
+}
 /* Product details styling */
 .box-pro-detail {
   text-align: center;
