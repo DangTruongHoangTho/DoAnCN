@@ -38,6 +38,26 @@ function getCartTotalPrice()
     }
     return $totalPrice;
 }
+function removeAccents($string)
+{
+  $accents = [
+    'a' => ['á', 'à', 'ả', 'ã', 'ạ', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ', 'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ', 'a'],
+    'e' => ['é', 'è', 'ẻ', 'ẽ', 'ẹ', 'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ', 'e'],
+    'i' => ['í', 'ì', 'ỉ', 'ĩ', 'ị', 'i'],
+    'o' => ['ó', 'ò', 'ỏ', 'õ', 'ọ', 'ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ', 'ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ', 'o'],
+    'u' => ['ú', 'ù', 'ủ', 'ũ', 'ụ', 'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự', 'u'],
+    'y' => ['ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ', 'y'],
+    'd' => ['đ', 'd'],
+  ];
+
+  foreach ($accents as $nonAccent => $accent) {
+    $string = str_replace($accent, $nonAccent, $string);
+  }
+
+  $string = str_replace(' ', '-', $string);
+
+  return $string;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -91,7 +111,7 @@ function getCartTotalPrice()
                                         </a>
                                         <div class="dropdown-menu">
                                             <?php foreach ($brands as $brand): ?>
-                                                <a href="#" class="dropdown-item"><?php echo htmlspecialchars($brand); ?></a>
+                                                <a href="chitietBrand.php?category=<?php echo urlencode($categoryName); ?>&brand=<?php echo urlencode($brand); ?>" class="dropdown-item"><?php echo htmlspecialchars($brand); ?></a>
                                             <?php endforeach; ?>
                                         </div>
                                     </div>

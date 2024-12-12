@@ -2,6 +2,7 @@
 include "layout/header_pro.php";
 $productId = isset($_GET['id']) ? (int)$_GET['id'] : 1;
 
+
 // Kiểm tra ID hợp lệ
 if ($productId <= 0) {
   die("ID sản phẩm không hợp lệ.");
@@ -19,6 +20,8 @@ if (!$product) {
 }
 
 $productCategoryId = $product['category_id'];
+$categoryNameInf = $product['category_name'] ?? '';
+$brandNameInf = $product['brand_name'] ?? '';
 
 // Lấy danh sách sản phẩm liên quan dựa trên category_id hoặc brand_id
 $sqlRelated = "SELECT products.id AS product_id, products.name AS product_name, categories.name AS category_name,
@@ -35,26 +38,6 @@ $stmtRelated->execute([
 $relatedProducts = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
 
 
-function removeAccents($string)
-{
-  $accents = [
-    'a' => ['á', 'à', 'ả', 'ã', 'ạ', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ', 'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ', 'a'],
-    'e' => ['é', 'è', 'ẻ', 'ẽ', 'ẹ', 'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ', 'e'],
-    'i' => ['í', 'ì', 'ỉ', 'ĩ', 'ị', 'i'],
-    'o' => ['ó', 'ò', 'ỏ', 'õ', 'ọ', 'ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ', 'ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ', 'o'],
-    'u' => ['ú', 'ù', 'ủ', 'ũ', 'ụ', 'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự', 'u'],
-    'y' => ['ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ', 'y'],
-    'd' => ['đ', 'd'],
-  ];
-
-  foreach ($accents as $nonAccent => $accent) {
-    $string = str_replace($accent, $nonAccent, $string);
-  }
-
-  $string = str_replace(' ', '-', $string);
-
-  return $string;
-}
 ?>
 
 <!-- Content Begin-->
@@ -95,7 +78,6 @@ function removeAccents($string)
                 <li>Thương hiệu: <span><strong><?php echo htmlspecialchars($product['brand_name']); ?></strong></span></li>
                 <li></li>
               </ul>
-
               <div class="product__details__price"><?php echo number_format($product['price'], 0, ',', '.') . " ₫"; ?></div>
               <div class="product__details__quantity">
                 <div class="quantity">
@@ -104,7 +86,7 @@ function removeAccents($string)
                   </div>
                 </div>
               </div>
-              <a href="./Order.php?id=<?php echo $productId; ?>" class="primary-btn">Đặt hàng</a>
+              <a href="./Order.php?id=<?php echo $productId; ?>" onclick="handleOrder(event, 2, 'Burberry Eau de Parfum 100ml', 6500000)" class="primary-btn">Đặt hàng</a>
               <a href="#" class="primary-btn">Thêm vào giỏ hàng</a>
             </div>
           </div>
@@ -157,7 +139,7 @@ function removeAccents($string)
                   class="product-attribute-list__item dl-horizontal attr-brand">
                   <dt><b>Thương hiệu</b></dt>
                   <dd>
-                    <a href="index.html#burberry">Burberry</a>
+                    <a href="chitietBrand.php?category=<?php echo urlencode($categoryNameInf); ?>&brand=<?php echo urlencode($brandNameInf); ?>"><?php echo htmlspecialchars($product['brand_name']); ?></a>
                   </dd>
                 </dl>
 
@@ -383,28 +365,29 @@ function removeAccents($string)
                 if (!empty($imageArray[0])) {
                   $categoryName = removeAccents($related['category_name']);
                   $brandName = removeAccents($related['brand_name']);
-
                   $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
                   $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
                   $imagePath = "images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
                 } ?>
                 <div class="product__item__pic set-bg" style="background-image: url('<?php echo $imagePath; ?>');"></div>
+                </a>
+                <div class="product__item__text">
+                <div class="pro-vendor"><strong><?php echo htmlspecialchars($related['brand_name']); ?></strong></div>
+                  <h6>
+                    <?php
+                    echo "<a class='pro-a-href' href='chitietSP.php?id={$related['product_id']}&slug={$relatedSlug}'>{$related['product_name']}</a>";
+                    ?>
+                  </h6>
+                  <h5><?php echo number_format($related['price'], 0, ',', '.') . " ₫"; ?></h5>
+                </div>
               </div>
-              <div class="product__item__text">
-                <h6>
-                  <?php
-                  echo "<a class='pro-a-href' href='chitietSP.php?id={$related['product_id']}&slug={$relatedSlug}'>{$related['product_name']}</a>";
-                  ?>
-                </h6>
-                <h5><?php echo number_format($related['price'], 0, ',', '.') . " ₫"; ?></h5>
-              </div>
+
             </div>
+          <?php } ?>
         </div>
-      <?php } ?>
       </div>
-  </div>
-  </section>
-  <!-- Related Product Section End -->
+    </section>
+    <!-- Related Product Section End -->
   </div>
 </main>
 

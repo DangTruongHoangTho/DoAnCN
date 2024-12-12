@@ -249,6 +249,12 @@ main {
   margin-bottom: 10px;
 }
 
+.pro-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .p-item .pro-name {
   font-size: 18px;
   margin-bottom: 10px;
@@ -1173,4 +1179,42 @@ button[type="submit"] {
   font-size: 14px;
   color: #333;
   margin-bottom: 16px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.pagination a {
+  padding: 8px 12px;
+  margin: 0 5px;
+  border: 1px solid #ddd;
+  color: #000;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.pagination a.active {
+  background-color: #f44336;
+  color: white;
+  border-color: #f44336;
+}
+
+.pagination .prev, .pagination .next {
+  font-weight: bold;
+}
+
+.pagination .page {
+  font-weight: normal;
+}
+
+.pagination .page:focus {
+  outline: none;
+}
+.pagination a.disabled {
+  pointer-events: none;
 }

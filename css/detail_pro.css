@@ -284,6 +284,7 @@ body {
 .related-product {
   padding: 50px 0;
   background-color: #f9f9f9;
+  
 }
 
 .related__product__title {
@@ -328,6 +329,11 @@ body {
   margin-bottom: 10px;
   color: #333;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  display: block;
 }
 
 .product__item__text h6 a {
@@ -357,11 +363,12 @@ body {
   color: #333;
   font-weight: 700;
 }
-/* Base styling for the related product section */
-.related-product {
-  padding: 50px 0;
-  background-color: #f9f9f9;
+.product__item__text .pro-vendor {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 10px;
 }
+/* Base styling for the related product section */
 
 .related__product__title {
   text-align: center;

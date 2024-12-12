@@ -10,26 +10,7 @@ $sql = "SELECT products.id AS product_id,
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-function removeAccents($string)
-{
-  $accents = [
-    'a' => ['á', 'à', 'ả', 'ã', 'ạ', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ', 'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ', 'a'],
-    'e' => ['é', 'è', 'ẻ', 'ẽ', 'ẹ', 'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ', 'e'],
-    'i' => ['í', 'ì', 'ỉ', 'ĩ', 'ị', 'i'],
-    'o' => ['ó', 'ò', 'ỏ', 'õ', 'ọ', 'ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ', 'ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ', 'o'],
-    'u' => ['ú', 'ù', 'ủ', 'ũ', 'ụ', 'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự', 'u'],
-    'y' => ['ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ', 'y'],
-    'd' => ['đ', 'd'],
-  ];
 
-  foreach ($accents as $nonAccent => $accent) {
-    $string = str_replace($accent, $nonAccent, $string);
-  }
-
-  $string = str_replace(' ', '-', $string);
-
-  return $string;
-}
 
 ?>
 <!-- Content Begin -->
