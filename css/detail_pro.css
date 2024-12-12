@@ -60,7 +60,7 @@ body {
 .dropdown-menu {
   display: none;
   position: absolute;
-  top: 100%; /* Hiển thị ngay dưới chữ "Đăng nhập" */
+  top: 85%; /* Hiển thị ngay dưới chữ "Đăng nhập" */
   left: 0;
   background-color: #f9f9f9;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
@@ -314,7 +314,7 @@ body {
 .product__item__pic {
   position: relative;
   overflow: hidden;
-  padding-top: 100%; /* 1:1 Aspect Ratio */
+  padding-top: 100%;
   background-size: cover;
   background-position: center;
 }

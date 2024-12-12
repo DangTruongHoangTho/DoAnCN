@@ -49,26 +49,29 @@ function removeAccents($string)
           <?php if (!empty($products)): ?>
             <?php foreach ($products as $product): ?>
               <div class="p-item">
-                <a href="chitietSP.php">
-                  <?php
-                  $imageArray = explode(', ', $product['images']);
-                  if (!empty($imageArray[0])) {
-                    $categoryName = removeAccents($product['category_name']);
-                    $brandName = removeAccents($product['brand_name']);
+                <?php
+                $productSlug = removeAccents($product['product_name']);
+                echo "<a class='pro-a-href' href='chitietSP.php?id={$product['product_id']}&slug={$productSlug}'>";
+                $imageArray = explode(', ', $product['images']);
+                if (!empty($imageArray[0])) {
+                  $categoryName = removeAccents($product['category_name']);
+                  $brandName = removeAccents($product['brand_name']);
 
-                    $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
-                    $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
-                    $imagePath = "images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
-                  ?>
-                    <img
-                      src="<?php echo $imagePath; ?>"
-                      alt=""
-                      class="w-50" />
-                  <?php } ?>
-                </a>
+                  $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
+                  $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
+                  $imagePath = "images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
+                ?>
+                  <img
+                    src="<?php echo $imagePath; ?>"
+                    alt=""
+                    class="w-50" />
+                <?php echo "</a>";
+                } ?>
                 <div class="pro-vendor"><strong><?php echo htmlspecialchars($product['brand_name']); ?></strong></div>
                 <h6 class="pro-name">
-                  <a class="pro-a-href" href="chitietSP.php"><?php echo htmlspecialchars($product['product_name']); ?></a>
+                  <?php
+                  echo "<a class='pro-a-href' href='chitietSP.php?id={$product['product_id']}&slug={$productSlug}'>{$product['product_name']}</a>";
+                  ?>
                 </h6>
                 <div class="box-pro-prices">
                   <p class="pro-price"><strong><?php echo number_format($product['price'], 0, ',', '.'); ?>đ</strong></p>
