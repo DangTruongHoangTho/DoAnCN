@@ -9,6 +9,16 @@ $stmt = $conn->prepare($sql);
 $stmt->execute();
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $categoryBrands = [];
+
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $sqlUser = "SELECT first_name, last_name, phone, email FROM users WHERE id = :id";
+    $stmtUser = $conn->prepare($sqlUser);
+    $stmtUser->execute(['id' => $user_id]);
+    $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+}
+
+
 foreach ($categories as $category) {
     $categoryBrands[$category['category_name']][] = $category['brand_name'];
 }

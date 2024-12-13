@@ -211,3 +211,37 @@ function moveRight() {
     }
     track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
 }
+
+function enableEditMode() {
+  document.querySelectorAll('input').forEach(input => input.removeAttribute('disabled'));
+  document.getElementById('btnEdit').classList.add('d-none'); // Ẩn nút "Chỉnh sửa"
+  document.getElementById('btnSave').classList.remove('d-none'); // Hiện nút "Lưu"
+  document.getElementById('btnCancel').classList.remove('d-none'); // Hiện nút "Hủy"
+}
+
+function disableEditMode() {
+  document.querySelectorAll('input').forEach(input => input.setAttribute('disabled', true));
+  document.getElementById('btnEdit').classList.remove('d-none'); // Hiện nút "Chỉnh sửa"
+  document.getElementById('btnSave').classList.add('d-none'); // Ẩn nút "Lưu"
+  document.getElementById('btnCancel').classList.add('d-none'); // Ẩn nút "Hủy"
+}
+
+function displayPass() {
+  var passwordField = document.getElementById("password");
+  var checkBox = document.querySelector('input[type="checkbox"]');
+  if (checkBox.checked){
+      passwordField.type = 'text';
+  } else {
+      passwordField.type = 'password';
+  }
+}
+
+function displayPassConfirm() {
+  var passwordField = document.getElementById("confirm_password");
+  var checkBox = document.querySelector('input[type="checkbox"]');
+  if (checkBox.checked){
+      passwordField.type = 'text';
+  } else {
+      passwordField.type = 'password';
+  }
+}
