@@ -191,3 +191,23 @@ function removeFromCart(index) {
   localStorage.setItem('cart', JSON.stringify(cart));
   renderCart();
 }
+let currentIndex = 0;
+const track = document.querySelector('.carousel-track');
+const items = document.querySelectorAll('.p-item');
+const itemWidth = items[0].offsetWidth + 20;
+
+function moveLeft() {
+    currentIndex--;
+    if (currentIndex < 0) {
+        currentIndex = items.length - 1;
+    }
+    track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+}
+
+function moveRight() {
+    currentIndex++;
+    if (currentIndex >= items.length) {
+        currentIndex = 0;
+    }
+    track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+}

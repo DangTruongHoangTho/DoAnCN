@@ -14,40 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Địa chỉ email không hợp lệ.";
     } else {
-        // // Kết nối cơ sở dữ liệu
-        // $servername = "localhost";
-        // $username = "root";
-        // $dbpassword = "";
-        // $dbname = "user_database";
-
-        // $conn = new mysqli($servername, $username, $dbpassword, $dbname);
-        // if ($conn->connect_error) {
-        //     die("Kết nối thất bại: " . $conn->connect_error);
-        // }
-
-        // // Kiểm tra email đã tồn tại
-        // $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-        // $stmt->bind_param("s", $email);
-        // $stmt->execute();
-        // $result = $stmt->get_result();
-        // if ($result->num_rows > 0) {
-        //     $error = "Email đã được sử dụng. Vui lòng chọn email khác.";
-        // } else {
-        //     // Mã hóa mật khẩu và thêm vào cơ sở dữ liệu
-        //     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-        //     $stmt = $conn->prepare("INSERT INTO users (last_name, first_name, email, phone, password, dob) VALUES (?, ?, ?, ?, ?, ?)");
-        //     $stmt->bind_param("ssssss", $last_name, $first_name, $email, $phone, $hashed_password, $dob);
-
-        //     if ($stmt->execute()) {
-        //         $success = "Đăng ký thành công!";
-        //     } else {
-        //         $error = "Có lỗi xảy ra. Vui lòng thử lại.";
-        //     }
-        // }
-
-        // // Đóng kết nối
-        // $stmt->close();
-        // $conn->close();
+        
     }
 }
 ?>
