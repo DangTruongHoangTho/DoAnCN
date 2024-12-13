@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Địa chỉ email không hợp lệ.";
     } else {
         session_start();
-        require 'database/conect.php';
+        require 'database/connect.php';
 
         // Kiểm tra email có tồn tại không
         $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");

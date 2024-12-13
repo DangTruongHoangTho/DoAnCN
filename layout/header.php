@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'database/conect.php';
+require 'database/connect.php';
 
 $sql = "SELECT categories.name AS category_name, 
             brands.name AS brand_name FROM brands INNER JOIN categories
