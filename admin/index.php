@@ -1,7 +1,7 @@
 <?php
 error_reporting(0);
     session_start();
-    include 'database/connect.php';
+    include '../database/connect.php';
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $name = trim($_POST['name']);
