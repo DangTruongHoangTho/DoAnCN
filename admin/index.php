@@ -1,7 +1,7 @@
 <?php
 error_reporting(0);
     session_start();
-    include 'connect.php';
+    include 'database/connect.php';
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $name = trim($_POST['name']);
@@ -11,7 +11,7 @@ error_reporting(0);
             $error = "Tên đăng nhập và mật khẩu không được để trống!";
         } else {
             try {
-                $stmt = $conn->prepare("SELECT id, name, password_hash, type FROM admin WHERE name = :name AND status = 'active'");
+                $stmt = $conn->prepare("SELECT id, name, password_hash, type FROM admins WHERE name = :name AND status = 'active'");
             $stmt->execute(['name' => $name]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -22,7 +22,7 @@ error_reporting(0);
                         'name' => $user['name'],
                         'type' => $user['type']
                     ];
-                    header("Location: admin/giaodienadmin.php");
+                    header("Location: giaodienadmin.php");
                     exit;
                 } else {
                     $error = "Mật khẩu không đúng!";

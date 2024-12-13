@@ -17,13 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Loại tài khoản không hợp lệ!";
     } else {
         try {
-            $stmt = $conn->prepare("SELECT id FROM admin WHERE name = :name");
+            $stmt = $conn->prepare("SELECT id FROM admins WHERE name = :name");
             $stmt->execute(['name' => $name]);
             if ($stmt->fetch()) {
                 $error = "Tên đăng nhập đã tồn tại!";
             } else {
                 $password_hash = password_hash($password, PASSWORD_BCRYPT);
-                $stmt = $conn->prepare("INSERT INTO admin (name, password_hash, status, type) 
+                $stmt = $conn->prepare("INSERT INTO admins (name, password_hash, status, type) 
                                             VALUES (:name, :password_hash, 'active', :type)");
                 $stmt->execute([
                     'name' => $name,
@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
 
         <div class="message">
-            <p>Đã có tài khoản? <a href="dangnhapadmin.php">Đăng nhập ngay!</a></p>
+            <p>Đã có tài khoản? <a href="index.php">Đăng nhập ngay!</a></p>
         </div>
     </div>
 </body>

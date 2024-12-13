@@ -1,10 +1,10 @@
 <?php
-error_reporting(0);
+// error_reporting(0);
     session_start();
-    include 'connect.php';
+    include '../database/connect.php';
     
     if (!isset($_SESSION['user']) || $_SESSION['user']['type'] !== 'admin') {
-        header("Location: dangnhapadmin.php"); 
+        header("Location: index.php"); 
         exit;
     }
     $user_name = $_SESSION['user']['name'];
