@@ -36,7 +36,7 @@ $total = 0;
                 </div>
             <?php endforeach; ?>
             <h3>Total: $<?php echo number_format($total, 2); ?></h3>
-            <a href="checkout.php">Proceed to Checkout</a>
+            <a href="dangxuat.php">Đăng xuất</a>
         </div>
     </main>
 <?php include "layout/footer.php"; ?>

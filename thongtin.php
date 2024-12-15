@@ -9,12 +9,29 @@ if (isset($_POST['submit'])) {
         $phone = $_POST['phone'];
         $email = $_POST['email'];
 
-        // Cập nhật dữ liệu vào cơ sở dữ liệu
-        $sql = "UPDATE users SET first_name = :first_name, last_name = :last_name, phone = :phone, email = :email WHERE id = :id";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute(['first_name' => $first_name, 'last_name' => $last_name, 'phone' => $phone, 'email' => $email, 'id' => $user_id]);
-        header("Location: thongtin.php");
-        exit;
+        function isEmailExists($conn, $email)
+        {
+            $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
+            $stmt->bindParam(":email", $email);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC) ? true : false;
+        }
+
+        if (isEmailExists($conn, $email)) {
+            $_SESSION['message_type'] = "error";
+            $_SESSION['message']  = "Email đã được sử dụng. Vui lòng chọn email khác.";
+        } else {
+            // Cập nhật dữ liệu vào cơ sở dữ liệu
+            $sql = "UPDATE users SET first_name = :first_name, last_name = :last_name, phone = :phone, email = :email WHERE id = :id";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute(['first_name' => $first_name, 'last_name' => $last_name, 'phone' => $phone, 'email' => $email, 'id' => $user_id]);
+
+            $_SESSION['message_type'] = "success";
+            $_SESSION['message'] = "Cập nhật thông tin thành công.";
+
+            header("Location: thongtin.php");
+            exit;
+        }
     } catch (PDOException $e) {
         echo "Lỗi cập nhật: " . $e->getMessage();
     }
@@ -40,7 +57,15 @@ if (isset($_POST['submit'])) {
                                     <div class="content-page">
                                         <p></p>
                                         <div class="gE iv gt">
-                                            <form method="POST" action="thongtin.php">
+                                            <?php if (isset($_SESSION['message'])){ ?>
+                                                <?php $messageType = $_SESSION['message_type'] ?? 'success'; ?>
+                                                <div class="alert alert-<?= $messageType ?>" id="messageBox">
+                                                    <?= $_SESSION['message']; ?>
+                                                </div>
+                                                <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
+                                            <?php } ?>
+
+                                            <form method="POST" id="editForm" action="thongtin.php">
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label for="firstName" class="form-label">Họ</label>

@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Số điện thoại phải là 10 chữ số.";
     } else {
         // Kết nối cơ sở dữ liệu
-        require 'database/conect.php';
+        require 'database/connect.php';
 
         function isEmailExists($conn, $email)
         {
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC) ? true : false;
         }
-        $email = $_POST['email'];        
+        $email = $_POST['email'];
         $first_name = $_POST['first_name'];
         $last_name = $_POST['last_name'];
         $phone = $_POST['phone'];
@@ -53,13 +53,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(":phone", $phone);
 
             if ($stmt->execute()) {
-                echo "<script>
-                    alert('Đăng ký thành công!');
-                    window.location.href = 'dangnhap.php';
-                    </script>";
+                // Lấy ID người dùng vừa được thêm
+                $user_id = $conn->lastInsertId();
+
+                // Lưu thông tin người dùng vào session
+                session_start();
+                $_SESSION['user_id'] = $user_id;
+                $_SESSION['user_name'] = $first_name . ' ' . $last_name;
+                header("Location: index.php");
                 // Reset dữ liệu sau khi thành công
                 $first_name = $last_name = $email = $phone = '';
-
             } else {
                 $error = "Có lỗi xảy ra. Vui lòng thử lại.";
             }

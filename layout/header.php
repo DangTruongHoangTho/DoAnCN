@@ -21,7 +21,7 @@ if (isset($_SESSION['user_id'])) {
 foreach ($categories as $category) {
     $categoryBrands[$category['category_name']][] = $category['brand_name'];
 }
-function removeAccents($string)
+function removeAccents($string) 
 {
     $accents = [
         'a' => ['á', 'à', 'ả', 'ã', 'ạ', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ', 'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ', 'a'],

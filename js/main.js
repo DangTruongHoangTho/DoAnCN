@@ -101,62 +101,69 @@ $(document).ready(function () {
     dots[slideIndex - 1].className += " active";
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    const cartIcon = document.querySelector('.dropdown');
-    const cartMenu = document.querySelector('.dropdown-menu');
+  document.addEventListener("DOMContentLoaded", function () {
+    const cartIcon = document.querySelector(".dropdown");
+    const cartMenu = document.querySelector(".dropdown-menu");
 
     // Sự kiện hover để hiển thị menu giỏ hàng
-    cartIcon.addEventListener('mouseenter', function () {
-        cartMenu.style.display = 'block'; // Hiển thị dropdown menu
+    cartIcon.addEventListener("mouseenter", function () {
+      cartMenu.style.display = "block"; // Hiển thị dropdown menu
     });
 
     // Ẩn menu khi chuột rời khỏi phần giỏ hàng
-    cartIcon.addEventListener('mouseleave', function () {
-        cartMenu.style.display = 'none'; // Ẩn dropdown menu
+    cartIcon.addEventListener("mouseleave", function () {
+      cartMenu.style.display = "none"; // Ẩn dropdown menu
     });
-});
+  });
 });
 
-function ajax_giohang(){
-	$('#spm').removeClass('ajaxing');
-	$('#mntq').removeClass('ajaxing');
-	$('#dgg').removeClass('ajaxing');
-	$.ajax({
-		url : "ajax_calling.php",
-		type : "get",
-		dataType:"text",
-		data : {
-			fname: 'php_giohang'
-		},
-		success : function (result){
-			$('#content').html(result);
-		}
-	});
+function ajax_giohang() {
+  $("#spm").removeClass("ajaxing");
+  $("#mntq").removeClass("ajaxing");
+  $("#dgg").removeClass("ajaxing");
+  $.ajax({
+    url: "ajax_calling.php",
+    type: "get",
+    dataType: "text",
+    data: {
+      fname: "php_giohang",
+    },
+    success: function (result) {
+      $("#content").html(result);
+    },
+  });
 }
 
 function handleOrder(event, productId, productName, productPrice) {
   event.preventDefault();
 
-  const quantityElement = document.getElementById('quantity');
-  const quantity = quantityElement ? parseInt(quantityElement.value, 10) || 1 : 1;
+  const quantityElement = document.getElementById("quantity");
+  const quantity = quantityElement
+    ? parseInt(quantityElement.value, 10) || 1
+    : 1;
 
   addToCart(productId, productName, productPrice, quantity);
-  window.location.href = './Order.php';
+  window.location.href = "./Order.php";
 }
 
 function addToCart(productId, productName, productPrice, quantity) {
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  cart.push({ id: productId, name: productName, price: productPrice, quantity });
-  localStorage.setItem('cart', JSON.stringify(cart));
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart.push({
+    id: productId,
+    name: productName,
+    price: productPrice,
+    quantity,
+  });
+  localStorage.setItem("cart", JSON.stringify(cart));
   alert(`Đã thêm ${quantity} x ${productName} vào giỏ hàng!`);
 }
 function renderCart() {
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  let cartContainer = document.getElementById('cart');
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let cartContainer = document.getElementById("cart");
   if (cart.length === 0) {
-      cartContainer.innerHTML = '<p>Giỏ hàng trống</p>';
+    cartContainer.innerHTML = "<p>Giỏ hàng trống</p>";
   } else {
-      cartContainer.innerHTML = `
+    cartContainer.innerHTML = `
           <table>
               <thead>
                   <tr>
@@ -168,7 +175,9 @@ function renderCart() {
                   </tr>
               </thead>
               <tbody>
-                  ${cart.map((item, index) => `
+                  ${cart
+                    .map(
+                      (item, index) => `
                       <tr>
                           <td>${item.name}</td>
                           <td>${item.price} VND</td>
@@ -178,7 +187,9 @@ function renderCart() {
                               <button onclick="removeFromCart(${index})">Hủy</button>
                           </td>
                       </tr>
-                  `).join('')}
+                  `
+                    )
+                    .join("")}
               </tbody>
           </table>
       `;
@@ -186,62 +197,66 @@ function renderCart() {
 }
 
 function removeFromCart(index) {
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
   cart.splice(index, 1);
-  localStorage.setItem('cart', JSON.stringify(cart));
+  localStorage.setItem("cart", JSON.stringify(cart));
   renderCart();
 }
 let currentIndex = 0;
-const track = document.querySelector('.carousel-track');
-const items = document.querySelectorAll('.p-item');
+const track = document.querySelector(".carousel-track");
+const items = document.querySelectorAll(".p-item");
 const itemWidth = items[0].offsetWidth + 20;
 
 function moveLeft() {
-    currentIndex--;
-    if (currentIndex < 0) {
-        currentIndex = items.length - 1;
-    }
-    track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+  currentIndex--;
+  if (currentIndex < 0) {
+    currentIndex = items.length - 1;
+  }
+  track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
 }
 
 function moveRight() {
-    currentIndex++;
-    if (currentIndex >= items.length) {
-        currentIndex = 0;
-    }
-    track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+  currentIndex++;
+  if (currentIndex >= items.length) {
+    currentIndex = 0;
+  }
+  track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
 }
 
 function enableEditMode() {
-  document.querySelectorAll('input').forEach(input => input.removeAttribute('disabled'));
-  document.getElementById('btnEdit').classList.add('d-none'); // Ẩn nút "Chỉnh sửa"
-  document.getElementById('btnSave').classList.remove('d-none'); // Hiện nút "Lưu"
-  document.getElementById('btnCancel').classList.remove('d-none'); // Hiện nút "Hủy"
+  document
+    .querySelectorAll("#editForm input")
+    .forEach((input) => input.removeAttribute("disabled"));
+  document.getElementById("btnEdit").classList.add("d-none"); // Ẩn nút "Chỉnh sửa"
+  document.getElementById("btnSave").classList.remove("d-none"); // Hiện nút "Lưu"
+  document.getElementById("btnCancel").classList.remove("d-none"); // Hiện nút "Hủy"
 }
 
 function disableEditMode() {
-  document.querySelectorAll('input').forEach(input => input.setAttribute('disabled', true));
-  document.getElementById('btnEdit').classList.remove('d-none'); // Hiện nút "Chỉnh sửa"
-  document.getElementById('btnSave').classList.add('d-none'); // Ẩn nút "Lưu"
-  document.getElementById('btnCancel').classList.add('d-none'); // Ẩn nút "Hủy"
+  document
+    .querySelectorAll("#editForm input")
+    .forEach((input) => input.setAttribute("disabled", true));
+  document.getElementById("btnEdit").classList.remove("d-none"); // Hiện nút "Chỉnh sửa"
+  document.getElementById("btnSave").classList.add("d-none"); // Ẩn nút "Lưu"
+  document.getElementById("btnCancel").classList.add("d-none"); // Ẩn nút "Hủy"
 }
 
 function displayPass() {
   var passwordField = document.getElementById("password");
   var checkBox = document.querySelector('input[type="checkbox"]');
-  if (checkBox.checked){
-      passwordField.type = 'text';
+  if (checkBox.checked) {
+    passwordField.type = "text";
   } else {
-      passwordField.type = 'password';
+    passwordField.type = "password";
   }
 }
 
 function displayPassConfirm() {
   var passwordField = document.getElementById("confirm_password");
   var checkBox = document.querySelector('input[type="checkbox"]');
-  if (checkBox.checked){
-      passwordField.type = 'text';
+  if (checkBox.checked) {
+    passwordField.type = "text";
   } else {
-      passwordField.type = 'password';
+    passwordField.type = "password";
   }
 }

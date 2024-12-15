@@ -1,7 +1,6 @@
 <?php
 // Xử lý dữ liệu khi form được gửi
 $error = '';
-$success = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Lấy dữ liệu từ form
@@ -32,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Đăng nhập thành công
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
-                $success = "Đăng nhập thành công!";
                 header("Location: index.php"); // Chuyển hướng đến trang chủ
                 exit;
             } else {
@@ -70,9 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h2>Đăng Nhập</h2>
         <?php if ($error): ?>
             <div class="error"><?= htmlspecialchars($error) ?></div>
-        <?php endif; ?>
-        <?php if ($success): ?>
-            <div class="success"><?= htmlspecialchars($success) ?></div>
         <?php endif; ?>
         <form action="dangnhap.php" method="post">
 
