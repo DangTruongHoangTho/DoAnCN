@@ -12,17 +12,24 @@ error_reporting(0);
         } else {
             try {
                 $stmt = $conn->prepare("SELECT id, name, password_hash, type FROM admins WHERE name = :name AND status = 'active'");
-            $stmt->execute(['name' => $name]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                $stmt->execute(['name' => $name]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($user) {
-                if (password_verify($password, $user['password_hash'])) {
-                    $_SESSION['user'] = [
-                        'id' => $user['id'],
-                        'name' => $user['name'],
-                        'type' => $user['type']
-                    ];
-                    header("Location: giaodienadmin.php");
+                if ($user) {
+                    if (password_verify($password, $user['password_hash'])) {
+                        $_SESSION['user'] = [
+                            'id' => $user['id'],
+                            'name' => $user['name'],
+                            'type' => $user['type']
+                        ];
+                
+                        if ($user['type'] == 'admin') {
+                            header("Location: giaodienadmin.php");
+                        } elseif ($user['type'] == 'staff') {
+                            header("Location: giaodienstaff.php");
+                        } else {
+                            $error = "Loại người dùng không hợp lệ!";
+                    }
                     exit;
                 } else {
                     $error = "Mật khẩu không đúng!";

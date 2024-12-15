@@ -3,7 +3,7 @@
     session_start();
     include '../database/connect.php';
     
-    if (!isset($_SESSION['user']) || $_SESSION['user']['type'] !== 'admin') {
+    if (!isset($_SESSION['user']) || $_SESSION['user']['type'] !== 'staff') {
         header("Location: index.php"); 
         exit;
     }
@@ -116,36 +116,7 @@
             <h3>Chào, <?= htmlspecialchars($user_name) ?> (<?= strtoupper($user_type) ?>)</h3>
         </div>
 
-        <h3>Danh sách người dùng</h3>
-        <?php if (isset($error)): ?>
-            <p style="color: red;"><?= htmlspecialchars($error) ?></p>
-        <?php endif; ?>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tên</th>
-                    <th>Loại</th>
-                    <th>Trạng thái</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($users as $user): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($user['id']) ?></td>
-                        <td><?= htmlspecialchars($user['name']) ?></td>
-                        <td><?= htmlspecialchars(ucwords($user['type'])) ?></td>
-                        <td><?= htmlspecialchars(ucwords($user['status'])) ?></td>
-                        <td>
-                            <a href="edit_user.php?id=<?= $user['id'] ?>" class="btn">Sửa</a>
-                            <a href="delete_user.php?id=<?= $user['id'] ?>" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa tài khoản này?')">Xóa</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        
     </div>
 </body>
 </html>

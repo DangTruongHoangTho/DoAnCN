@@ -1,61 +1,150 @@
 <?php
-$host = 'localhost';
-$user = 'root';
-$pass = '';
-$dbname = 'dbshop';
-$conn = new mysqli($host, $user, $pass, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    error_reporting(0);
+    session_start();
+    include '../database/connect.php';
+    
+    if (!isset($_SESSION['user']) || $_SESSION['user']['type'] !== 'admin') {
+        header("Location: index.php");
+        exit;
+    }
 
-session_start();
-if (!isset($_SESSION['admin_id'])) {
-    header('Location: dangnhapadmin.php');
-    exit();
-}
+    $user_name = $_SESSION['user']['name'];
+    $user_type = $_SESSION['user']['type'];
 
-$sql = "SELECT * FROM brands";
-$result = $conn->query($sql);
+    try {
+        $stmt = $conn->prepare("SELECT brands.id, brands.name, categories.name AS category_name FROM brands 
+                                JOIN categories ON brands.category_id = categories.id");
+        $stmt->execute();
+        $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $error = "Lỗi cơ sở dữ liệu: " . $e->getMessage();
+    }
 
 ?>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Danh Sách Thương Hiệu</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sản phẩm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            color: white;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            display: block;
+            padding: 15px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            border-bottom: 1px solid #495057;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            padding: 15px;
+            color: white;
+            font-size: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .btn {
+            padding: 5px 10px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn:hover {
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
-    <h1>Danh Sách Thương Hiệu</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Tên thương hiệu</th>
-                <th>Trạng thái</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($row = $result->fetch_assoc()) { ?>
+    <!-- Sidebar -->
+    <div class="sidebar">
+    <h2 style="color:white; text-align:center;">Admin Dashboard</h2>
+    <a href="giaodienadmin.php">Trang chủ</a>
+    <a href="danhsachdanhmuc.php">Danh sách danh mục</a>
+    <a href="themdanhmuc.php">Thêm danh mục</a>
+    <a href="danhsachthuonghieu.php">Danh sách thương hiệu</a>
+    <a href="themthuonghieu.php">Thêm thương hiệu</a>
+    <a href="danhsachsanpham.php">Danh sách sản phẩm</a>
+    <a href="themsanpham.php">Thêm sản phẩm</a>
+    <a href="dangxuat.php">Đăng xuất</a>
+</div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="header">
+            <h3>Chào, <?= htmlspecialchars($user_name) ?> (<?= strtoupper($user_type) ?>)</h3>
+        </div>
+
+        <h3>Danh sách thương hiệu</h3>
+        <?php if (isset($error)): ?>
+            <p style="color: red;"><?= htmlspecialchars($error) ?></p>
+        <?php endif; ?>
+
+        <table>
+            <thead>
                 <tr>
-                    <td><?php echo $row['id']; ?></td>
-                    <td><?php echo $row['name']; ?></td>
-                    <td><?php echo $row['status'] == 1 ? 'Kích hoạt' : 'Ẩn'; ?></td>
+                    <th>ID</th>
+                    <th>Tên thương hiệu</th>
+                    <th>Danh mục</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($brands as $brand): ?>
+                <tr>
+                    <td><?= htmlspecialchars($brand['id']) ?></td>
+                    <td><?= htmlspecialchars($brand['name']) ?></td>
+                    <td><?= htmlspecialchars($brand['category_name']) ?></td>
                     <td>
-                        <a href="edit_brand.php?id=<?php echo $row['id']; ?>">Sửa</a> | 
-                        <a href="delete_brand.php?id=<?php echo $row['id']; ?>">Xóa</a>
+                        <a href="brands_edit.php?id=<?= $brand['id'] ?>" class="btn">Sửa</a>
+                        <a href="brands_delete.php?id=<?= $brand['id'] ?>" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa thương hiệu này?')">Xóa</a>
                     </td>
                 </tr>
-            <?php } ?>
-        </tbody>
-    </table>
-    <br>
-    <a href="giaodienadmin.php" class="btn-back">Quay về trang chủ</a>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
-
-<?php
-$conn->close();
-?>
