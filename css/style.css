@@ -1218,3 +1218,49 @@ button[type="submit"] {
 .pagination a.disabled {
   pointer-events: none;
 }
+
+.sidebar {
+  height: 100vh;
+  padding: 20px;
+}
+.sidebar a {
+  display: block;
+  padding: 10px 15px;
+  color: #000;
+  text-decoration: none;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+.sidebar a:hover {
+  background-color: #ff6b6b;
+  color: #fff;
+}
+.sidebar a.active {
+  background-color: #ff6b6b;
+  color: #fff;
+}
+.form-label { 
+  font-weight: bold;
+}
+.btn{
+  background-color: #ff6b6b;
+}
+.btn-primary {
+  background-color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+.btn-primary:hover {
+  background-color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+.btn-primary:active {
+  background-color: #ff6b6b;
+  color: #fff;
+}
+
+.dropdown .nav-link {
+  min-width: 50px;
+  white-space: nowrap;  
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

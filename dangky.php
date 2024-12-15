@@ -120,11 +120,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <label for="password">Mật khẩu*</label>
             <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
+            <div class="checkbox-container">
+                <input type="checkbox" id="show_password" onclick="displayPass()" />
+                <label for="show_password">Hiện mật khẩu</label>
+            </div>
 
             <label for="confirm_password">Nhập lại mật khẩu*</label>
             <input type="password" id="confirm_password" name="confirm_password" placeholder="Nhập lại mật khẩu" required>
             <div class="checkbox-container">
-                <input type="checkbox" id="show_password" onclick="displayPass()" />
+                <input type="checkbox" id="show_password" onclick="displayPassConfirm()" />
                 <label for="show_password">Hiện mật khẩu</label>
             </div>
             <button type="submit">Đăng Ký</button>

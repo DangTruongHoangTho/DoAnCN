@@ -79,18 +79,7 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/main.js"></script>
     <script>
-      function displayPass(){
-          var passwordField = document.getElementById("password");
-          var passwordField1 = document.getElementById("confirm_password");
-          var checkBox = document.querySelector('input[type="checkbox"]');
-          if (checkBox.checked){
-              passwordField.type = 'text';
-              passwordField1.type = 'text';
-          } else {
-              passwordField.type = 'password';
-              passwordField1.type = 'password';
-          }
-      }
+      
     </script>
   </body>
 </html>
