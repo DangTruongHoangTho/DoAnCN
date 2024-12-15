@@ -13,7 +13,7 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $productsPerPage;
 
 // Truy vấn SQL với LIMIT và OFFSET
-if ($categoryName && $brandName) {
+if ($categoryName || $brandName) {
   $sql = "SELECT products.id AS product_id, 
                    products.name AS product_name, 
                    brands.name AS brand_name, 

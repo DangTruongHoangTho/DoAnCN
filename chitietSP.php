@@ -82,12 +82,14 @@ $relatedProducts = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
               <div class="product__details__quantity">
                 <div class="quantity">
                   <div class="pro-qty">
-                    <input type="text" id="quantity" min="1" value="1" />
+                    <input type="text" id="quantity" name="quantity" min="1" value="1" />
                   </div>
                 </div>
               </div>
-              <a href="./Order.php?id=<?php echo $productId; ?>" onclick="handleOrder(event, 2, 'Burberry Eau de Parfum 100ml', 6500000)" class="primary-btn">Đặt hàng</a>
-              <a href="#" class="primary-btn">Thêm vào giỏ hàng</a>
+              <form method="POST" action="">
+                <a href="./order.php?id=<?php echo $productId; ?>" onclick="handleOrder(event, <?php echo $productId; ?>, <?php echo htmlspecialchars($product['name']); ?>, <?php echo $product['price']; ?>)" class="primary-btn">Đặt hàng</a>
+                <a href="#" class="primary-btn">Thêm vào giỏ hàng</a>
+              </form>
             </div>
           </div>
         </div>
@@ -372,7 +374,7 @@ $relatedProducts = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
                 <div class="product__item__pic set-bg" style="background-image: url('<?php echo $imagePath; ?>');"></div>
                 </a>
                 <div class="product__item__text">
-                <div class="pro-vendor"><strong><?php echo htmlspecialchars($related['brand_name']); ?></strong></div>
+                  <div class="pro-vendor"><strong><?php echo htmlspecialchars($related['brand_name']); ?></strong></div>
                   <h6>
                     <?php
                     echo "<a class='pro-a-href' href='chitietSP.php?id={$related['product_id']}&slug={$relatedSlug}'>{$related['product_name']}</a>";

@@ -143,7 +143,7 @@ function handleOrder(event, productId, productName, productPrice) {
     : 1;
 
   addToCart(productId, productName, productPrice, quantity);
-  window.location.href = "./Order.php";
+  window.location.href = "./order.php";
 }
 
 function addToCart(productId, productName, productPrice, quantity) {

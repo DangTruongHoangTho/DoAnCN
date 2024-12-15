@@ -1,6 +1,7 @@
 <?php
 session_start();
 require 'database/connect.php';
+include "database/function.php";
 $sql = "SELECT categories.name AS category_name, 
             brands.name AS brand_name FROM brands INNER JOIN categories
             ON brands.category_id = categories.id
@@ -22,52 +23,7 @@ if (isset($_SESSION['user_id'])) {
 foreach ($categories as $category) {
     $categoryBrands[$category['category_name']][] = $category['brand_name'];
 }
-function getCartItems()
-{
-    return $_SESSION['cart'] ?? [];
-}
 
-function getCartTotalItems()
-{
-    $totalItems = 0;
-    if (isset($_SESSION['cart'])) {
-        foreach ($_SESSION['cart'] as $item) {
-            $totalItems += $item['quantity'];
-        }
-    }
-    return $totalItems;
-}
-
-function getCartTotalPrice()
-{
-    $totalPrice = 0;
-    if (isset($_SESSION['cart'])) {
-        foreach ($_SESSION['cart'] as $item) {
-            $totalPrice += $item['price'] * $item['quantity'];
-        }
-    }
-    return $totalPrice;
-}
-function removeAccents($string)
-{
-  $accents = [
-    'a' => ['á', 'à', 'ả', 'ã', 'ạ', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ', 'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ', 'a'],
-    'e' => ['é', 'è', 'ẻ', 'ẽ', 'ẹ', 'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ', 'e'],
-    'i' => ['í', 'ì', 'ỉ', 'ĩ', 'ị', 'i'],
-    'o' => ['ó', 'ò', 'ỏ', 'õ', 'ọ', 'ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ', 'ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ', 'o'],
-    'u' => ['ú', 'ù', 'ủ', 'ũ', 'ụ', 'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự', 'u'],
-    'y' => ['ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ', 'y'],
-    'd' => ['đ', 'd'],
-  ];
-
-  foreach ($accents as $nonAccent => $accent) {
-    $string = str_replace($accent, $nonAccent, $string);
-  }
-
-  $string = str_replace(' ', '-', $string);
-
-  return $string;
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">

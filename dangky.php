@@ -25,13 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Kết nối cơ sở dữ liệu
         require 'database/connect.php';
 
-        function isEmailExists($conn, $email)
-        {
-            $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
-            $stmt->bindParam(":email", $email);
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC) ? true : false;
-        }
+        include 'database/function.php';
         $email = $_POST['email'];
         $first_name = $_POST['first_name'];
         $last_name = $_POST['last_name'];
