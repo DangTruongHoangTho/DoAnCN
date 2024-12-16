@@ -38,8 +38,6 @@ function searchRelativeName($searchTerm)
 // Hàm tìm kiếm tổng hợp (tìm tên tuyệt đối trước, nếu không có thì tìm tên tương đối)
 function searchProducts($searchTerm)
 {
-    global $conn;
-
     // Tìm kiếm tuyệt đối (khi người dùng nhập đúng tên)
     $exactResults = searchExactName($searchTerm);
     if (count($exactResults) > 0) {
@@ -96,10 +94,9 @@ function getCartTotalPrice()
     return $totalPrice;
 }
 function isEmailExists($conn, $email)
-        {
-            $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
-            $stmt->bindParam(":email", $email);
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC) ? true : false;
-        }
-?>
+{
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
+    $stmt->bindParam(":email", $email);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC) ? true : false;
+}

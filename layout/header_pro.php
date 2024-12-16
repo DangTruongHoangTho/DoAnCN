@@ -104,7 +104,7 @@ foreach ($categories as $category) {
                             </a>
                             <div class="dropdown-menu">
                                 <a href="thongtin.php" class="dropdown-item">Thông tin tài khoản</a>
-                                <a href="dangxuat.php" class="dropdown-item">Đăng xuất</a>
+                                <a href="user_account/dangxuat.php" class="dropdown-item">Đăng xuất</a>
                             </div>
                         </div>
                     <?php else: ?>
@@ -114,8 +114,8 @@ foreach ($categories as $category) {
                                 <i class="fa fa-user" aria-hidden="true"></i> Đăng nhập
                             </a>
                             <div class="dropdown-menu">
-                                <a href="dangnhap.php" class="dropdown-item">Đăng nhập</a>
-                                <a href="dangky.php" class="dropdown-item">Đăng ký</a>
+                                <a href="user_account/dangnhap.php" class="dropdown-item">Đăng nhập</a>
+                                <a href="user_account/dangky.php" class="dropdown-item">Đăng ký</a>
                             </div>
                         </div>
                     <?php endif; ?>

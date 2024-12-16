@@ -240,23 +240,3 @@ function disableEditMode() {
   document.getElementById("btnSave").classList.add("d-none"); // Ẩn nút "Lưu"
   document.getElementById("btnCancel").classList.add("d-none"); // Ẩn nút "Hủy"
 }
-
-function displayPass() {
-  var passwordField = document.getElementById("password");
-  var checkBox = document.querySelector('input[type="checkbox"]');
-  if (checkBox.checked) {
-    passwordField.type = "text";
-  } else {
-    passwordField.type = "password";
-  }
-}
-
-function displayPassConfirm() {
-  var passwordField = document.getElementById("confirm_password");
-  var checkBox = document.querySelector('input[type="checkbox"]');
-  if (checkBox.checked) {
-    passwordField.type = "text";
-  } else {
-    passwordField.type = "password";
-  }
-}

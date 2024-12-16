@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Địa chỉ email không hợp lệ.";
     } else {
         session_start();
-        require 'database/connect.php';
+        require '../database/connect.php';
 
         // Kiểm tra email có tồn tại không
         $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Đăng nhập thành công
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
-                header("Location: index.php"); // Chuyển hướng đến trang chủ
+                header("Location: ../index.php"); // Chuyển hướng đến trang chủ
                 exit;
             } else {
                 $error = "Sai mật khẩu. Vui lòng thử lại.";
@@ -60,8 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet" />
     <!-- CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
     <div class="form-container-dangnhap">
@@ -90,4 +90,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <p>Trở thành thành viên của T&T Store<br>Để nhận những ưu đãi và dịch vụ bất ngờ</p>
         <a href="dangky.php" class="register-button">Đăng Ký</a>
     </div>
-<?php include "layout/footer.php"; ?>
+<?php include "../layout/footer.php"; ?>

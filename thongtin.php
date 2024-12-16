@@ -44,7 +44,7 @@ if (isset($_POST['submit'])) {
             <!-- Sidebar -->
             <nav class="col-md-3 col-lg-2 sidebar">
                 <a href="#" class="active">Tài khoản của tôi</a>
-                <a href="dangxuat.php">Đăng xuất</a>
+                <a href="user_account/dangxuat.php">Đăng xuất</a>
             </nav>
 
             <main class="col-md-9 col-lg-10">

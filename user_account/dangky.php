@@ -17,15 +17,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Vui lòng điền đầy đủ các trường bắt buộc.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Địa chỉ email không hợp lệ.";
+    } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/', $password)) {
+        $error = "Mật khẩu phải có ít nhất 6 ký tự, bao gồm chữ hoa, chữ thường và số.";
     } elseif ($password !== $confirm_password) {
         $error = "Mật khẩu không khớp.";
     } elseif (!preg_match('/^[0-9]{10}$/', $phone)) {
         $error = "Số điện thoại phải là 10 chữ số.";
     } else {
         // Kết nối cơ sở dữ liệu
-        require 'database/connect.php';
+        require '../database/connect.php';
 
-        include 'database/function.php';
+        include '../database/function.php';
         $email = $_POST['email'];
         $first_name = $_POST['first_name'];
         $last_name = $_POST['last_name'];
@@ -36,27 +38,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Email đã được sử dụng. Vui lòng chọn email khác.";
         } else {
             // Mã hóa mật khẩu và thêm vào cơ sở dữ liệu
+            include 'send_mail.php';
             $hashed_password = hash('sha256', $password);
+            $otp = generateOTP();
 
-            $stmt = $conn->prepare("INSERT INTO users (email, first_name, last_name, password_hash, phone) 
-                            VALUES (:email, :first_name, :last_name, :password_hash, :phone)");
+            $stmt = $conn->prepare("INSERT INTO users (email, first_name, last_name, password_hash, phone, otp) 
+                            VALUES (:email, :first_name, :last_name, :password_hash, :phone, :otp)");
             $stmt->bindParam(":email", $email);
             $stmt->bindParam(":first_name", $first_name);
             $stmt->bindParam(":last_name", $last_name);
             $stmt->bindParam(":password_hash", $hashed_password);
             $stmt->bindParam(":phone", $phone);
+            $stmt->bindParam(":otp", $otp);
 
             if ($stmt->execute()) {
-                // Lấy ID người dùng vừa được thêm
-                $user_id = $conn->lastInsertId();
-
-                // Lưu thông tin người dùng vào session
-                session_start();
-                $_SESSION['user_id'] = $user_id;
-                $_SESSION['user_name'] = $first_name . ' ' . $last_name;
-                header("Location: index.php");
-                // Reset dữ liệu sau khi thành công
-                $first_name = $last_name = $email = $phone = '';
+                $result = sendOTP($email, $otp);
+                if ($result === true) {
+                    $user_id = $conn->lastInsertId();
+                    session_start();
+                    $_SESSION['user_id'] = $user_id;
+                    $_SESSION['user_name'] = $first_name . ' ' . $last_name;
+                    $_SESSION['email'] = $email;
+                    $_SESSION['otp'] = $otp;
+                    $_SESSION['action'] = 'register';
+                    // Reset dữ liệu sau khi thành công
+                    $first_name = $last_name = $email = $phone = '';
+                    header("Location: xac_thuc_otp.php");
+                    exit;
+                } else {
+                    $error = "Không thể gửi OTP. Vui lòng thử lại.";
+                }
             } else {
                 $error = "Có lỗi xảy ra. Vui lòng thử lại.";
             }
@@ -84,8 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet" />
     <!-- CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
 </head>
 
 <body>
@@ -122,13 +133,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="show_password">Hiện mật khẩu</label>
             </div>
 
-            <label for="confirm_password">Nhập lại mật khẩu*</label>
+            <label for="confirm_password">Xác nhận lại mật khẩu*</label>
             <input type="password" id="confirm_password" name="confirm_password" placeholder="Nhập lại mật khẩu" required>
             <div class="checkbox-container">
-                <input type="checkbox" id="show_password" onclick="displayPassConfirm()" />
+                <input type="checkbox" id="show_password_confirm" onclick="displayPassConfirm()" />
                 <label for="show_password">Hiện mật khẩu</label>
             </div>
             <button type="submit">Đăng Ký</button>
         </form>
     </div>
-    <?php include "layout/footer.php"; ?>
+    <?php include "../layout/footer.php"; ?>
