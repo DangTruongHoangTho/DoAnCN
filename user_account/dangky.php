@@ -1,10 +1,9 @@
 <?php
-// Xử lý dữ liệu khi form được gửi
 $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Lấy dữ liệu từ form
+
     $first_name = trim($_POST['first_name']);
     $last_name = trim($_POST['last_name']);
     $email = trim($_POST['email']);
@@ -12,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // Kiểm tra các trường dữ liệu
     if (empty($last_name) || empty($first_name) || empty($email) || empty($phone) || empty($password)) {
         $error = "Vui lòng điền đầy đủ các trường bắt buộc.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -24,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (!preg_match('/^[0-9]{10}$/', $phone)) {
         $error = "Số điện thoại phải là 10 chữ số.";
     } else {
-        // Kết nối cơ sở dữ liệu
         require '../database/connect.php';
 
         include '../database/function.php';
@@ -37,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (isEmailExists($conn, $email)) {
             $error = "Email đã được sử dụng. Vui lòng chọn email khác.";
         } else {
-            // Mã hóa mật khẩu và thêm vào cơ sở dữ liệu
             include 'send_mail.php';
             $hashed_password = hash('sha256', $password);
             $otp = generateOTP();

@@ -98,6 +98,18 @@
        passwordField.type = "password";
      }
    }
+
+   function addToCart(productId, productSlug) {
+     const quantity = document.getElementById('quantity').value || 1;
+
+     fetch('chitietSP.php', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/x-www-form-urlencoded'
+         },
+         body: `id=${productId}&slug=${productSlug}`
+       });
+   }
  </script>
  </body>
 

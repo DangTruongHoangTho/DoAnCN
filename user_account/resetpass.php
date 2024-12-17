@@ -79,10 +79,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="confirm_password">Xác nhận lại mật khẩu*</label>
             <input type="password" id="confirm_password" name="confirm_password" placeholder="Nhập lại mật khẩu" required>
             <div class="checkbox-container">
-                <input type="checkbox" id="show_password" onclick="displayPassConfirm()" />
+                <input type="checkbox" id="show_password_confirm" onclick="displayPassConfirm()" />
                 <label for="show_password">Hiện mật khẩu</label>
             </div>
-            <button type="submit">Đăng Ký</button>
+            <button type="submit">Sửa mật khẩu</button>
         </form>
     </div>
     <?php include "../layout/footer.php"; ?>

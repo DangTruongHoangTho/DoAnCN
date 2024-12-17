@@ -105,14 +105,12 @@ $(document).ready(function () {
     const cartIcon = document.querySelector(".dropdown");
     const cartMenu = document.querySelector(".dropdown-menu");
 
-    // Sự kiện hover để hiển thị menu giỏ hàng
     cartIcon.addEventListener("mouseenter", function () {
-      cartMenu.style.display = "block"; // Hiển thị dropdown menu
+      cartMenu.style.display = "block";
     });
 
-    // Ẩn menu khi chuột rời khỏi phần giỏ hàng
     cartIcon.addEventListener("mouseleave", function () {
-      cartMenu.style.display = "none"; // Ẩn dropdown menu
+      cartMenu.style.display = "none";
     });
   });
 });
@@ -146,62 +144,6 @@ function handleOrder(event, productId, productName, productPrice) {
   window.location.href = "./order.php";
 }
 
-function addToCart(productId, productName, productPrice, quantity) {
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  cart.push({
-    id: productId,
-    name: productName,
-    price: productPrice,
-    quantity,
-  });
-  localStorage.setItem("cart", JSON.stringify(cart));
-  alert(`Đã thêm ${quantity} x ${productName} vào giỏ hàng!`);
-}
-function renderCart() {
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  let cartContainer = document.getElementById("cart");
-  if (cart.length === 0) {
-    cartContainer.innerHTML = "<p>Giỏ hàng trống</p>";
-  } else {
-    cartContainer.innerHTML = `
-          <table>
-              <thead>
-                  <tr>
-                      <th>Sản phẩm</th>
-                      <th>Giá</th>
-                      <th>Số lượng</th>
-                      <th>Tổng</th>
-                      <th></th>
-                  </tr>
-              </thead>
-              <tbody>
-                  ${cart
-                    .map(
-                      (item, index) => `
-                      <tr>
-                          <td>${item.name}</td>
-                          <td>${item.price} VND</td>
-                          <td>${item.quantity}</td>
-                          <td>${item.price * item.quantity} VND</td>
-                          <td>
-                              <button onclick="removeFromCart(${index})">Hủy</button>
-                          </td>
-                      </tr>
-                  `
-                    )
-                    .join("")}
-              </tbody>
-          </table>
-      `;
-  }
-}
-
-function removeFromCart(index) {
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  cart.splice(index, 1);
-  localStorage.setItem("cart", JSON.stringify(cart));
-  renderCart();
-}
 let currentIndex = 0;
 const track = document.querySelector(".carousel-track");
 const items = document.querySelectorAll(".p-item");

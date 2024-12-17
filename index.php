@@ -3,14 +3,13 @@ include "layout/banner.php";
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
   $searchTerm = $_GET['search'];
-  $products = searchProducts($searchTerm); 
+  $products = searchProducts($searchTerm);
 } else {
-  $sql = "SELECT products.id AS product_id, 
-            products.name AS product_name, 
-            brands.name AS brand_name,
-            categories.name AS category_name, 
-            products.price, products.images FROM products 
+  $sql = "SELECT products.id AS product_id, products.name AS product_name, 
+            brands.name AS brand_name, categories.name AS category_name, 
+            products.price, products_imgs.images FROM products 
             INNER JOIN brands ON products.brand_id = brands.id 
+            INNER JOIN products_imgs ON products.id = products_imgs.product_id
             INNER JOIN categories ON brands.category_id = categories.id LIMIT 4";
   $stmt = $conn->prepare($sql);
   $stmt->execute();

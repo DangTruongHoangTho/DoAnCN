@@ -29,10 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $update_stmt = $conn->prepare("UPDATE users SET verify = 1, otp = NULL WHERE email = :email");
                     $update_stmt->bindParam(":email", $email);
                     $update_stmt->execute();
-
+                    
+                    if (!isset($_SESSION['cart'])) {
+                        $_SESSION['cart'] = [];
+                    }
                     unset($_SESSION['email']);
                     unset($_SESSION['action']);
-                    header("Location: ../index.php");
+                    header("Location: ../index.php");   
                     exit;
                 } elseif ($action === 'resetpass') {
                     unset($_SESSION['action']);

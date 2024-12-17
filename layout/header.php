@@ -17,6 +17,12 @@ if (isset($_SESSION['user_id'])) {
     $stmtUser = $conn->prepare($sqlUser);
     $stmtUser->execute(['id' => $user_id]);
     $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+    $sqlCart = "SELECT * FROM carts 
+                WHERE user_id = :user_id";
+    $stmtCart = $conn->prepare($sqlCart);
+    $stmtCart->execute(['user_id' => $user_id]);
+    $cart = $stmtCart->fetchAll(PDO::FETCH_ASSOC);
 }
 
 foreach ($categories as $category) {
@@ -118,29 +124,10 @@ foreach ($categories as $category) {
                             </div>
                         </div>
                     <?php endif; ?>
-                    <div class="dropdown">
-                        <a href="giohang.php" class="nav-link">
-                            <i class="fa fa-shopping-cart"></i>
-                            <span class="badge badge-danger" id="cart-count"><?= getCartTotalItems() ?></span>
-                        </a>
-                        <div class="dropdown-menu">
-                            <?php $cartItems = getCartItems(); ?>
-                            <?php if (!empty($cartItems)): ?>
-                                <?php foreach ($cartItems as $item): ?>
-                                    <div class="item">
-                                        <p><strong><?= htmlspecialchars($item['name']) ?></strong></p>
-                                        <p>Giá: <?= number_format($item['price']) ?> VND</p>
-                                        <p>Số lượng: <?= $item['quantity'] ?></p>
-                                    </div>
-                                <?php endforeach; ?>
-                                <div class="total">
-                                    Tổng cộng: <?= number_format(getCartTotalPrice()) ?> VND
-                                </div>
-                            <?php else: ?>
-                                <div class="empty">Chưa có sản phẩm nào trong giỏ hàng</div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
+                    <a href="giohang.php" class="nav-link">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="badge badge-danger" id="cart-count"><?= getCartTotalItems() ?></span>
+                    </a>
                 </div>
 
                 <div class="col-lg-12 col-md-12 col-12 justify-content-end " id="account-cart-container">

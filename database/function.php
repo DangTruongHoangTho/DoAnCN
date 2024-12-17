@@ -74,6 +74,9 @@ function getCartItems()
 
 function getCartTotalItems()
 {
+    if (!isset($_SESSION['cart'])) {
+        return 0;
+    }
     $totalItems = 0;
     if (isset($_SESSION['cart'])) {
         foreach ($_SESSION['cart'] as $item) {
@@ -92,6 +95,19 @@ function getCartTotalPrice()
         }
     }
     return $totalPrice;
+}
+function loadCartFromDatabase($userId, $conn) {
+    $sql = "SELECT product_id, quantity FROM carts WHERE user_id = :user_id";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute(['user_id' => $userId]);
+    $cart = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $_SESSION['cart'] = [];
+    foreach ($cart as $item) {
+        $_SESSION['cart'][$item['product_id']] = [
+            'quantity' => $item['quantity']
+        ];
+    }
 }
 function isEmailExists($conn, $email)
 {

@@ -1,29 +1,22 @@
 <?php include "layout/header.php";
 include "layout/banner.php";
-// Lấy tham số từ URL
 $categoryName = $_GET['category'] ?? '';
 $brandName = $_GET['brand'] ?? '';
-// Xác định số lượng sản phẩm trên mỗi trang
 $productsPerPage = 1;
 
-// Lấy số trang hiện tại từ URL (mặc định là trang 1)
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-// Tính toán OFFSET
 $offset = ($page - 1) * $productsPerPage;
 
-// Truy vấn SQL với LIMIT và OFFSET
 if ($categoryName || $brandName) {
   $sql = "SELECT products.id AS product_id, 
-                   products.name AS product_name, 
-                   brands.name AS brand_name, 
-                   categories.name AS category_name, 
-                   products.price, products.images 
-            FROM products 
-            INNER JOIN brands ON products.brand_id = brands.id 
-            INNER JOIN categories ON brands.category_id = categories.id 
-            WHERE categories.name = :categoryName AND brands.name = :brandName
-            LIMIT :limit OFFSET :offset";
+          products.name AS product_name, brands.name AS brand_name, 
+          categories.name AS category_name,products.price, products_imgs.images FROM products 
+          INNER JOIN brands ON products.brand_id = brands.id 
+          INNER JOIN categories ON brands.category_id = categories.id 
+          INNER JOIN products_imgs ON products.id = products_imgs.product_id
+          WHERE categories.name = :categoryName AND brands.name = :brandName
+          LIMIT :limit OFFSET :offset";
 
   $stmt = $conn->prepare($sql);
   $stmt->bindParam(':categoryName', $categoryName, PDO::PARAM_STR);
@@ -34,7 +27,6 @@ if ($categoryName || $brandName) {
   $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Truy vấn tổng số sản phẩm trong danh mục và thương hiệu cụ thể
 $sqlCount = "SELECT COUNT(*) FROM products 
              INNER JOIN brands ON products.brand_id = brands.id 
              INNER JOIN categories ON brands.category_id = categories.id 
@@ -45,7 +37,6 @@ $stmtCount->bindParam(':brandName', $brandName, PDO::PARAM_STR);
 $stmtCount->execute();
 $totalProducts = $stmtCount->fetchColumn();
 
-// Tính toán tổng số trang
 $totalPages = ceil($totalProducts / $productsPerPage);
 
 ?>

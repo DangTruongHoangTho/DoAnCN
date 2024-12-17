@@ -7,9 +7,10 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
 
     // Truy vấn lấy thông tin sản phẩm từ CSDL
-    $stmt = $conn->prepare("SELECT p.*, b.name AS brand_name, b.category_id, categories.name AS category_name
-                            FROM products p
+    $stmt = $conn->prepare("SELECT p.*, b.name AS brand_name, b.category_id, categories.name AS category_name,
+                            products_imgs.images FROM products p
                             JOIN brands b ON p.brand_id = b.id
+                            INNER JOIN products_imgs ON p.id = products_imgs.product_id
                             JOIN categories ON b.category_id = categories.id WHERE p.id = :id");
     $stmt->bindParam(':id', $productId, PDO::PARAM_INT);
     $stmt->execute();

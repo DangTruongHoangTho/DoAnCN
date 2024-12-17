@@ -1,13 +1,10 @@
 <?php
-// Xử lý dữ liệu khi form được gửi
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Lấy dữ liệu từ form
     $email = trim($_POST['email']);
     $password = $_POST['password'];
 
-    // Kiểm tra các trường dữ liệu
     if (empty($email) || empty($password)) {
         $error = "Vui lòng điền đầy đủ các trường bắt buộc.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -15,8 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         session_start();
         require '../database/connect.php';
+        require '../database/function.php';
 
-        // Kiểm tra email có tồn tại không
         $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
         $stmt->bindParam(":email", $email);
         $stmt->execute();
@@ -24,14 +21,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $hashed_password = hash('sha256', $password);
         if ($user) {
-            // So sánh mật khẩu đã nhập với mật khẩu hash trong CSDL
-            $hashed_password = hash('sha256', $password);
 
             if ($hashed_password === $user['password_hash']) {
-                // Đăng nhập thành công
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
-                header("Location: ../index.php"); // Chuyển hướng đến trang chủ
+                if (!isset($_SESSION['cart'])) {
+                    $_SESSION['cart'] = [];
+                }
+                loadCartFromDatabase($user['id'], $conn);
+                header("Location: ../index.php");
                 exit;
             } else {
                 $error = "Sai mật khẩu. Vui lòng thử lại.";
@@ -40,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Email không tồn tại trong hệ thống.";
         }
 
-        $conn = null; // Đóng kết nối cơ sở dữ liệu
+        $conn = null;
     }
 }
 ?>
