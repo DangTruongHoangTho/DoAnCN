@@ -2,7 +2,7 @@
 include "layout/banner.php";
 $categoryName = $_GET['category'] ?? '';
 $brandName = $_GET['brand'] ?? '';
-$productsPerPage = 1;
+$productsPerPage = 2;
 
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
@@ -11,12 +11,12 @@ $offset = ($page - 1) * $productsPerPage;
 if ($categoryName || $brandName) {
   $sql = "SELECT products.id AS product_id, 
           products.name AS product_name, brands.name AS brand_name, 
-          categories.name AS category_name,products.price, products_imgs.images FROM products 
+          categories.name AS category_name,products.price, MIN(products_imgs.images) AS images FROM products 
           INNER JOIN brands ON products.brand_id = brands.id 
           INNER JOIN categories ON brands.category_id = categories.id 
           INNER JOIN products_imgs ON products.id = products_imgs.product_id
           WHERE categories.name = :categoryName AND brands.name = :brandName
-          LIMIT :limit OFFSET :offset";
+          GROUP BY products.id LIMIT :limit OFFSET :offset";
 
   $stmt = $conn->prepare($sql);
   $stmt->bindParam(':categoryName', $categoryName, PDO::PARAM_STR);

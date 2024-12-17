@@ -1,11 +1,11 @@
     <?php
     session_start();
+    require 'database/connect.php';
+    include "database/function.php";
     if (!isset($_SESSION['user_id'])) {
         header("Location: user_account/dangnhap.php");
         exit();
     }
-    require 'database/connect.php';
-    include "database/function.php";
     $sql = "SELECT categories.name AS category_name, 
                 brands.name AS brand_name FROM brands INNER JOIN categories
                 ON brands.category_id = categories.id
@@ -21,6 +21,17 @@
         $stmtUser = $conn->prepare($sqlUser);
         $stmtUser->execute(['id' => $user_id]);
         $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+        $sqlCart = "SELECT c.id AS cart_id, p.id AS product_id, p.name AS product_name, categories.name AS category_name, 
+                    b.name AS brand_name, c.quantity, p.price, p.discounted_price, MIN(pi.images) AS first_image FROM carts c
+                    INNER JOIN products p ON c.product_id = p.id
+                    INNER JOIN brands b ON p.brand_id = b.id    
+                    INNER JOIN products_imgs pi ON p.id = pi.product_id 
+                    INNER JOIN categories ON b.category_id = categories.id 
+                    WHERE c.user_id = ? GROUP BY p.id";
+        $stmtCart = $conn->prepare($sqlCart);
+        $stmtCart->execute([$user_id]);
+        $cartItems = $stmtCart->fetchAll(PDO::FETCH_ASSOC);
     }
 
 

@@ -50,7 +50,6 @@ $relatedProducts = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $productIdCart = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 1;
-  // $quantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
 
   $stmtCart = $conn->prepare("SELECT id, quantity FROM carts WHERE user_id = ? AND product_id = ?");
   $stmtCart->execute([$user_id, $productIdCart]);
@@ -125,7 +124,8 @@ ob_end_flush();
                 <li>Thương hiệu: <span><strong><?php echo htmlspecialchars($product['brand_name']); ?></strong></span></li>
                 <li>Size: <span><strong><?php echo htmlspecialchars($product['size']); ?></strong> ml</span></li>
               </ul>
-              <div class="product__details__price"><?php echo number_format($product['price'], 0, ',', '.') . " ₫"; ?></div>
+              <h6><p class="mb-0 text-muted"><s><?php echo number_format($product['price'], 0, ',', '.'); ?>đ</s></h6>
+              <div class="product__details__price"><?php echo number_format($product['discounted_price'], 0, ',', '.') . " ₫"; ?></div>
 
               <form method="POST" action="">
                 <div class="product__details__quantity">

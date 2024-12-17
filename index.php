@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
 } else {
   $sql = "SELECT products.id AS product_id, products.name AS product_name, 
             brands.name AS brand_name, categories.name AS category_name, 
-            products.price, products_imgs.images FROM products 
+            products.discounted_price, products_imgs.images FROM products 
             INNER JOIN brands ON products.brand_id = brands.id 
             INNER JOIN products_imgs ON products.id = products_imgs.product_id
             INNER JOIN categories ON brands.category_id = categories.id LIMIT 4";
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
                   ?>
                 </h6>
                 <div class="box-pro-prices">
-                  <p class="pro-price"><strong><?php echo number_format($product['price'], 0, ',', '.'); ?>đ</strong></p>
+                  <p class="pro-price"><strong><?php echo number_format($product['discounted_price'], 0, ',', '.'); ?>đ</strong></p>
                 </div>
               </div>
               <div class="box-pro-detail">
