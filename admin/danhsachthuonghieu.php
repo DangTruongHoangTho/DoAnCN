@@ -27,34 +27,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách sản phẩm</title>
+    <title>Danh sách thương hiệu</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 0;
+            background-color: #f8f9fa;
         }
         .sidebar {
             width: 250px;
             background-color: #343a40;
             height: 100vh;
             position: fixed;
-            top: 0;
-            left: 0;
             color: white;
             padding-top: 20px;
         }
         .sidebar a {
             display: block;
-            padding: 15px;
-            color: white;
+            padding: 12px;
+            color: #ddd;
             text-decoration: none;
             font-size: 16px;
-            border-bottom: 1px solid #495057;
+            transition: background 0.3s;
         }
         .sidebar a:hover {
             background-color: #495057;
+            color: white;
         }
         .content {
             margin-left: 250px;
@@ -62,89 +59,81 @@
         }
         .header {
             background-color: #007bff;
-            padding: 15px;
             color: white;
-            font-size: 20px;
+            padding: 15px;
+            border-radius: 8px;
             text-align: center;
+            margin-bottom: 20px;
         }
         table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
         }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f8f9fa;
-        }
-        .btn {
-            padding: 5px 10px;
-            border: none;
-            background-color: #28a745;
+        table th {
+            background-color: #343a40;
             color: white;
-            cursor: pointer;
         }
-        .btn-danger {
-            background-color: #dc3545;
+        table td, table th {
+            text-align: center;
+            vertical-align: middle;
         }
-        .btn:hover {
-            opacity: 0.8;
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
     </style>
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-    <h2 style="color:white; text-align:center;">Admin Dashboard</h2>
-    <a href="giaodienadmin.php">Trang chủ</a>
-    <a href="danhsachdanhmuc.php">Danh sách danh mục</a>
-    <a href="themdanhmuc.php">Thêm danh mục</a>
-    <a href="danhsachthuonghieu.php">Danh sách thương hiệu</a>
-    <a href="themthuonghieu.php">Thêm thương hiệu</a>
-    <a href="danhsachsanpham.php">Danh sách sản phẩm</a>
-    <a href="themsanpham.php">Thêm sản phẩm</a>
-    <a href="dangxuat.php">Đăng xuất</a>
-</div>
+        <h2 class="text-center mb-4">Admin Panel</h2>
+        <a href="giaodienadmin.php">Trang chủ</a>
+        <a href="danhsachdanhmuc.php">Danh sách danh mục</a>
+        <a href="themdanhmuc.php">Thêm danh mục</a>
+        <a href="danhsachthuonghieu.php">Danh sách thương hiệu</a>
+        <a href="themthuonghieu.php">Thêm thương hiệu</a>
+        <a href="danhsachsanpham.php">Danh sách sản phẩm</a>
+        <a href="themsanpham.php">Thêm sản phẩm</a>
+        <a href="dangxuat.php" class="text-danger">Đăng xuất</a>
+    </div>
 
     <!-- Main Content -->
     <div class="content">
-        <div class="header">
-            <h3>Chào, <?= htmlspecialchars($user_name) ?> (<?= strtoupper($user_type) ?>)</h3>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Danh sách thương hiệu</h4>
+                <span>Chào, <strong><?= htmlspecialchars($user_name) ?> (<?= strtoupper($user_type) ?>)</strong></span>
+            </div>
+            <div class="card-body">
+                <?php if (isset($error)): ?>
+                    <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+                <?php endif; ?>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên thương hiệu</th>
+                            <th>Danh mục</th>
+                            <th class="text-center">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($brands as $brand): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($brand['id']) ?></td>
+                            <td><?= htmlspecialchars($brand['name']) ?></td>
+                            <td><?= htmlspecialchars($brand['category_name']) ?></td>
+                            <td class="text-center">
+                                <a href="brands_edit.php?id=<?= $brand['id'] ?>" class="btn btn-sm btn-custom">Sửa</a>
+                                <a href="brands_delete.php?id=<?= $brand['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa thương hiệu này?')">Xóa</a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <h3>Danh sách thương hiệu</h3>
-        <?php if (isset($error)): ?>
-            <p style="color: red;"><?= htmlspecialchars($error) ?></p>
-        <?php endif; ?>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tên thương hiệu</th>
-                    <th>Danh mục</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($brands as $brand): ?>
-                <tr>
-                    <td><?= htmlspecialchars($brand['id']) ?></td>
-                    <td><?= htmlspecialchars($brand['name']) ?></td>
-                    <td><?= htmlspecialchars($brand['category_name']) ?></td>
-                    <td>
-                        <a href="brands_edit.php?id=<?= $brand['id'] ?>" class="btn">Sửa</a>
-                        <a href="brands_delete.php?id=<?= $brand['id'] ?>" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa thương hiệu này?')">Xóa</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
     </div>
 </body>
 </html>
