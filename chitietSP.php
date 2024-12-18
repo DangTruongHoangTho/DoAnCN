@@ -1,43 +1,89 @@
 <?php
+ob_start();
 include "layout/header_pro.php";
-$productId = isset($_GET['id']) ? (int)$_GET['id'] : 1;
-
-
-// Kiểm tra ID hợp lệ
-if ($productId <= 0) {
+if (isset($_GET['id'])) {
+  $_SESSION['productId'] = $_GET['id'];
+} else {
   die("ID sản phẩm không hợp lệ.");
 }
-$stmt = $conn->prepare("SELECT p.*, b.name AS brand_name, b.category_id, categories.name AS category_name
-                            FROM products p
-                            JOIN brands b ON p.brand_id = b.id
-                            JOIN categories ON b.category_id = categories.id
-                            WHERE p.id = ?");
+if (isset($_SESSION['productId'])) {
+  $productId = $_SESSION['productId'];
+} else {
+  die("Không có sản phẩm nào được chọn.");
+}
+$slug = isset($_POST['slug']) ? $_POST['slug'] : '';
+$quantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
+
+$stmt = $conn->prepare("SELECT p.*, b.name AS brand_name, b.category_id, categories.name AS category_name, 
+                        products_imgs.images FROM products p
+                        JOIN brands b ON p.brand_id = b.id JOIN categories ON b.category_id = categories.id
+                        INNER JOIN products_imgs ON p.id = products_imgs.product_id WHERE p.id = ?");
 $stmt->execute([$productId]);
 $product = $stmt->fetch(PDO::FETCH_ASSOC);
+$productSlug = removeAccents($product['name']);
 
-if (!$product) {
+$stmtImgs = $conn->prepare("SELECT images FROM products_imgs WHERE product_id = ?");
+$stmtImgs->execute([$productId]);
+$productImgs = $stmtImgs->fetchAll(PDO::FETCH_ASSOC);
+
+$imageArray = [];
+foreach ($productImgs as $row) {
+  $imageArray[] = $row['images'];
+}
+
+if (!$product || empty($productSlug)) {
   die("Sản phẩm không tồn tại.");
 }
 
 $productCategoryId = $product['category_id'];
 $categoryNameInf = $product['category_name'] ?? '';
 $brandNameInf = $product['brand_name'] ?? '';
-
-// Lấy danh sách sản phẩm liên quan dựa trên category_id hoặc brand_id
-$sqlRelated = "SELECT products.id AS product_id, products.name AS product_name, categories.name AS category_name,
-              brands.name AS brand_name, products.price, products.images FROM products 
-              INNER JOIN brands ON products.brand_id = brands.id
-              JOIN categories ON brands.category_id = categories.id 
-              WHERE brands.category_id = :category_id 
-              AND products.id != :product_id LIMIT 4";
+$sqlRelated = "SELECT p.id AS product_id, p.name AS product_name, c.name AS category_name, 
+              b.name AS brand_name, p.price, MIN(pi.images) AS image FROM products p
+              INNER JOIN brands b ON p.brand_id = b.id INNER JOIN categories c ON b.category_id = c.id
+              INNER JOIN products_imgs pi ON p.id = pi.product_id WHERE b.category_id = :category_id 
+              AND p.id != :product_id GROUP BY p.id, p.name, c.name, b.name, p.price  LIMIT 4";
 $stmtRelated = $conn->prepare($sqlRelated);
-$stmtRelated->execute([
-  ':category_id' => $productCategoryId, // Lấy ID danh mục từ sản phẩm hiện tại
-  ':product_id' => $productId,         // Bỏ qua sản phẩm hiện tại
-]);
+$stmtRelated->execute([':category_id' => $productCategoryId, ':product_id' => $productId]);
 $relatedProducts = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
 
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $productIdCart = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 1;
+
+  $stmtCart = $conn->prepare("SELECT id, quantity FROM carts WHERE user_id = ? AND product_id = ?");
+  $stmtCart->execute([$user_id, $productIdCart]);
+  $cartItem = $stmtCart->fetch(PDO::FETCH_ASSOC);
+  if ($cartItem) {
+    $newQuantity = $cartItem['quantity'] + $quantity;
+    $stmtUpCart = $conn->prepare("UPDATE carts SET quantity = ? WHERE id = ?");
+    $stmtUpCart->execute([$newQuantity, $cartItem['id']]);
+  } else {
+    $stmtAddCart = $conn->prepare("INSERT INTO carts (user_id, product_id, quantity) VALUES (?, ?, ?)");
+    $stmtAddCart->execute([$user_id, $productIdCart, $quantity]);
+  }
+
+  if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+  }
+
+  $found = false;
+  foreach ($_SESSION['cart'] as &$item) {
+    if ($item['product_id'] == $productId) {
+      $item['quantity'] += $quantity;
+      $found = true;
+      break;
+    }
+  }
+
+  if (!$found) {
+    $_SESSION['cart'][] = ['product_id' => $productId, 'quantity' => $quantity];
+  }
+  header("Location: chitietSP.php?id=$productId&slug=$productSlug");
+  exit();
+}
+
+ob_end_flush();
 ?>
 
 <!-- Content Begin-->
@@ -46,16 +92,16 @@ $relatedProducts = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
     <section class="block-products" id="burberry">
       <div class="container p-row">
         <div class="row">
-          <div class="col-sm-4 col-md-4 col-xs-6 col-lg-5">
-            <?php $imageArray = explode(', ', $product['images']); // Tách chuỗi thành mảng
-            if (!empty($product['images'])) {
-              foreach ($imageArray as $index => $image) {
+          <div class="thumbnail-container col-sm-4 col-md-4 col-xs-6 col-lg-5">
+            <?php
+            if (!empty($imageArray)) {
+              foreach ($imageArray as $index => $img) {
                 $categoryName = removeAccents($product['category_name']);
                 $brandName = removeAccents($product['brand_name']);
 
                 $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
                 $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
-                $imagePath = "images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($image));
+                $imagePath = "images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($img));
             ?>
                 <div class="p-item">
                   <div class="mySlides">
@@ -76,18 +122,24 @@ $relatedProducts = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
               <h3><?php echo htmlspecialchars($product['name']); ?></h3>
               <ul>
                 <li>Thương hiệu: <span><strong><?php echo htmlspecialchars($product['brand_name']); ?></strong></span></li>
-                <li></li>
+                <li>Size: <span><strong><?php echo htmlspecialchars($product['size']); ?></strong> ml</span></li>
               </ul>
-              <div class="product__details__price"><?php echo number_format($product['price'], 0, ',', '.') . " ₫"; ?></div>
-              <div class="product__details__quantity">
-                <div class="quantity">
-                  <div class="pro-qty">
-                    <input type="text" id="quantity" min="1" value="1" />
+              <h6><p class="mb-0 text-muted"><s><?php echo number_format($product['price'], 0, ',', '.'); ?>đ</s></h6>
+              <div class="product__details__price"><?php echo number_format($product['discounted_price'], 0, ',', '.') . " ₫"; ?></div>
+
+              <form method="POST" action="">
+                <div class="product__details__quantity">
+                  <div class="quantity">
+                    <div class="pro-qty">
+                      <input type="text" id="quantity" name="quantity" min="1" value="1" />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <a href="./Order.php?id=<?php echo $productId; ?>" onclick="handleOrder(event, 2, 'Burberry Eau de Parfum 100ml', 6500000)" class="primary-btn">Đặt hàng</a>
-              <a href="#" class="primary-btn">Thêm vào giỏ hàng</a>
+                <a href="./order.php?id=<?php echo $productId; ?>" onclick="handleOrder(event, <?php echo $productId; ?>, <?php echo htmlspecialchars($product['name']); ?>, <?php echo $product['price']; ?>)" class="primary-btn">Đặt hàng</a>
+                <input type="hidden" name="product_id" value="<?php echo $productId; ?>">
+                <input type="hidden" name="slug" value="<?php echo $productSlug; ?>">
+                <button type="submit" class="primary-btn">Thêm vào giỏ hàng</button>
+              </form>
             </div>
           </div>
         </div>
@@ -361,18 +413,17 @@ $relatedProducts = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
                 <?php
                 $relatedSlug = removeAccents($related['product_name']);
                 echo "<a class='pro-a-href' href='chitietSP.php?id={$related['product_id']}&slug={$relatedSlug}'>";
-                $imageArray = explode(', ', $related['images']);
-                if (!empty($imageArray[0])) {
+                if (!empty($related['image'])) {
                   $categoryName = removeAccents($related['category_name']);
                   $brandName = removeAccents($related['brand_name']);
                   $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
                   $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
-                  $imagePath = "images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
+                  $imagePath = "images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($related['image']));
                 } ?>
                 <div class="product__item__pic set-bg" style="background-image: url('<?php echo $imagePath; ?>');"></div>
                 </a>
                 <div class="product__item__text">
-                <div class="pro-vendor"><strong><?php echo htmlspecialchars($related['brand_name']); ?></strong></div>
+                  <div class="pro-vendor"><strong><?php echo htmlspecialchars($related['brand_name']); ?></strong></div>
                   <h6>
                     <?php
                     echo "<a class='pro-a-href' href='chitietSP.php?id={$related['product_id']}&slug={$relatedSlug}'>{$related['product_name']}</a>";

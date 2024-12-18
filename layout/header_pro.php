@@ -1,6 +1,7 @@
 <?php
 session_start();
 require 'database/connect.php';
+include "database/function.php";
 $sql = "SELECT categories.name AS category_name, 
             brands.name AS brand_name FROM brands INNER JOIN categories
             ON brands.category_id = categories.id
@@ -22,52 +23,7 @@ if (isset($_SESSION['user_id'])) {
 foreach ($categories as $category) {
     $categoryBrands[$category['category_name']][] = $category['brand_name'];
 }
-function getCartItems()
-{
-    return $_SESSION['cart'] ?? [];
-}
 
-function getCartTotalItems()
-{
-    $totalItems = 0;
-    if (isset($_SESSION['cart'])) {
-        foreach ($_SESSION['cart'] as $item) {
-            $totalItems += $item['quantity'];
-        }
-    }
-    return $totalItems;
-}
-
-function getCartTotalPrice()
-{
-    $totalPrice = 0;
-    if (isset($_SESSION['cart'])) {
-        foreach ($_SESSION['cart'] as $item) {
-            $totalPrice += $item['price'] * $item['quantity'];
-        }
-    }
-    return $totalPrice;
-}
-function removeAccents($string)
-{
-  $accents = [
-    'a' => ['á', 'à', 'ả', 'ã', 'ạ', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ', 'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ', 'a'],
-    'e' => ['é', 'è', 'ẻ', 'ẽ', 'ẹ', 'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ', 'e'],
-    'i' => ['í', 'ì', 'ỉ', 'ĩ', 'ị', 'i'],
-    'o' => ['ó', 'ò', 'ỏ', 'õ', 'ọ', 'ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ', 'ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ', 'o'],
-    'u' => ['ú', 'ù', 'ủ', 'ũ', 'ụ', 'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự', 'u'],
-    'y' => ['ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ', 'y'],
-    'd' => ['đ', 'd'],
-  ];
-
-  foreach ($accents as $nonAccent => $accent) {
-    $string = str_replace($accent, $nonAccent, $string);
-  }
-
-  $string = str_replace(' ', '-', $string);
-
-  return $string;
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -148,7 +104,7 @@ function removeAccents($string)
                             </a>
                             <div class="dropdown-menu">
                                 <a href="thongtin.php" class="dropdown-item">Thông tin tài khoản</a>
-                                <a href="dangxuat.php" class="dropdown-item">Đăng xuất</a>
+                                <a href="user_account/dangxuat.php" class="dropdown-item">Đăng xuất</a>
                             </div>
                         </div>
                     <?php else: ?>
@@ -158,36 +114,16 @@ function removeAccents($string)
                                 <i class="fa fa-user" aria-hidden="true"></i> Đăng nhập
                             </a>
                             <div class="dropdown-menu">
-                                <a href="dangnhap.php" class="dropdown-item">Đăng nhập</a>
-                                <a href="dangky.php" class="dropdown-item">Đăng ký</a>
+                                <a href="user_account/dangnhap.php" class="dropdown-item">Đăng nhập</a>
+                                <a href="user_account/dangky.php" class="dropdown-item">Đăng ký</a>
                             </div>
                         </div>
                     <?php endif; ?>
-                    <div class="dropdown">
-                        <a href="giohang.php" class="nav-link">
-                            <i class="fa fa-shopping-cart"></i>
-                            <span class="badge badge-danger" id="cart-count"><?= getCartTotalItems() ?></span>
-                        </a>
-                        <div class="dropdown-menu">
-                            <?php $cartItems = getCartItems(); ?>
-                            <?php if (!empty($cartItems)): ?>
-                                <?php foreach ($cartItems as $item): ?>
-                                    <div class="item">
-                                        <p><strong><?= htmlspecialchars($item['name']) ?></strong></p>
-                                        <p>Giá: <?= number_format($item['price']) ?> VND</p>
-                                        <p>Số lượng: <?= $item['quantity'] ?></p>
-                                    </div>
-                                <?php endforeach; ?>
-                                <div class="total">
-                                    Tổng cộng: <?= number_format(getCartTotalPrice()) ?> VND
-                                </div>
-                            <?php else: ?>
-                                <div class="empty">Chưa có sản phẩm nào trong giỏ hàng</div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
+                    <a href="giohang.php" class="nav-link">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="badge badge-danger" id="cart-count"><?= getCartTotalItems() ?></span>
+                    </a>
                 </div>
-
                 <div class="col-lg-12 col-md-12 col-12 justify-content-end " id="account-cart-container">
                     <form class="input-group">
                         <div class="search-bar position-relative">

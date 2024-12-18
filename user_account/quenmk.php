@@ -1,20 +1,46 @@
 <?php
-// Xử lý dữ liệu khi form được gửi
+session_start();
+require '../database/connect.php';
+include '../database/function.php';
+
 $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Lấy dữ liệu từ form
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
 
-    // Kiểm tra các trường dữ liệu
-    if (empty($email) || empty($password)) {
+    $email = trim($_POST['email']);
+    if (empty($email)) {
         $error = "Vui lòng điền đầy đủ các trường bắt buộc.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Địa chỉ email không hợp lệ.";
     } else {
-        
+        $email = $_POST['email'];
+
+        if (!isEmailExists($conn, $email)) {
+            $error = "Email chưa được đăng ký.";
+        } else {
+            include 'send_mail.php';
+            $otp = generateOTP();
+
+            $stmt = $conn->prepare("UPDATE users SET otp = :otp WHERE email = :email");
+            $stmt->bindParam(":otp", $otp);
+            $stmt->bindParam(":email", $email);
+
+            if ($stmt->execute()) {
+                $result  = sendOTP($email, $otp);
+                if ($result  === true) {
+                    $_SESSION['email'] = $email;
+                    $_SESSION['action'] = 'resetpass';
+                    header("Location: xac_thuc_otp.php");
+                    exit;
+                } else {
+                    $error = "Không thể gửi OTP. Vui lòng thử lại.";
+                }
+            } else {
+                $error = "Có lỗi xảy ra. Vui lòng thử lại.";
+            }
+        }
+        $conn = null;
     }
 }
 ?>
@@ -34,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             margin: auto;
             margin-top: 15px;
             margin-bottom: 30px;
+            text-align: center;
 
         }
         .form-container h2 {
@@ -43,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .form-container label {
             display: block;
             margin-bottom: 5px;
+            text-align: left;
         }
         .form-container input {
             width: 100%;
@@ -108,10 +136,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         }
         .btn-cancel {
-            display: inline-block; /* Để nó hiển thị như một khối nội tuyến */
-            margin: 10px auto 0; /* Tự động căn giữa với margin */
+            display: inline-block;
+            margin: 10px auto 0;
             font-size: 14px;
-            color: #007bff; /* Màu xanh */
+            color: #3a393a;
             text-decoration: none;
             text-align: center;
         }
@@ -129,12 +157,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet" />
     <!-- CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
     <div class="form-container">
-        <h2>Đăng Nhập</h2>
+        <h2>Email khôi phục mật khẩu</h2>
         <?php if ($error): ?>
             <div class="error"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
@@ -142,7 +170,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="success"><?= htmlspecialchars($success) ?></div>
         <?php endif; ?>
         <form action="quenmk.php" method="post">
-
             <label for="email">Email*</label>
             <input type="email" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?>" placeholder="Email" required>
             
@@ -155,4 +182,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <p>Trở thành thành viên của T&T Store<br>Để nhận những ưu đãi và dịch vụ bất ngờ</p>
         <a href="dangky.php" class="register-button">Đăng Ký</a>
     </div>
-<?php include "layout/footer.php"; ?>
+<?php include "../layout/footer.php"; ?>

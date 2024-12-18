@@ -1,27 +1,31 @@
 <?php include "layout/header.php";
 include "layout/banner.php";
-$sql = "SELECT products.id AS product_id, 
-            products.name AS product_name, 
-            brands.name AS brand_name,
-            categories.name AS category_name, 
-            products.price, products.images FROM products 
-            INNER JOIN brands ON products.brand_id = brands.id 
-            INNER JOIN categories ON brands.category_id = categories.id LIMIT 4";
-$stmt = $conn->prepare($sql);
-$stmt->execute();
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
+  $searchTerm = $_GET['search'];
+  $products = searchProducts($searchTerm);
+} else {
+  $sql = "SELECT products.id AS product_id, products.name AS product_name, 
+            brands.name AS brand_name, categories.name AS category_name, 
+            products.discounted_price, products_imgs.images FROM products 
+            INNER JOIN brands ON products.brand_id = brands.id 
+            INNER JOIN products_imgs ON products.id = products_imgs.product_id
+            INNER JOIN categories ON brands.category_id = categories.id LIMIT 4";
+  $stmt = $conn->prepare($sql);
+  $stmt->execute();
+  $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 ?>
 <!-- Content Begin -->
 <main class="main">
   <div class="justify-content-center text-center">
-    <section class="block-products" id="burberry">
+    <section class="block-products" id="new">
       <div class="container">
         <h1
           class="category-heading pt-4"
           style="font-family: 'Times New Roman', Times, serif">
-          Hàng Mới
+          <?php echo isset($searchTerm) ? 'Kết quả tìm kiếm cho: ' . htmlspecialchars($searchTerm) : 'Hàng Mới'; ?>
         </h1>
       </div>
       <div class="container p-row">
@@ -40,7 +44,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                   $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
                   $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
-                  $imagePath = "images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
+                  $imagePath = "./images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
                 ?>
                   <img
                     src="<?php echo $imagePath; ?>"
@@ -55,7 +59,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   ?>
                 </h6>
                 <div class="box-pro-prices">
-                  <p class="pro-price"><strong><?php echo number_format($product['price'], 0, ',', '.'); ?>đ</strong></p>
+                  <p class="pro-price"><strong><?php echo number_format($product['discounted_price'], 0, ',', '.'); ?>đ</strong></p>
                 </div>
               </div>
               <div class="box-pro-detail">
