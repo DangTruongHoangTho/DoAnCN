@@ -1,72 +1,104 @@
 <?php
-    error_reporting(0);
-    session_start();
-    include '../database/connect.php';
-    
-    if (!isset($_SESSION['user'])) {
-        header("Location: index.php");
-        exit;
-    }
+session_start();
+include '../database/connect.php';
 
-    $user_name = $_SESSION['user']['name'];
-    $user_type = $_SESSION['user']['type'];
+if (!isset($_SESSION['user'])) {
+    header("Location: index.php");
+    exit;
+}
 
+$user_name = $_SESSION['user']['name'];
+$user_type = $_SESSION['user']['type'];
+
+$error = '';
+$success = '';
+$product = null;
+if (isset($_GET['id'])) {
+    $product_id = intval($_GET['id']);
     try {
 
-        $brandsStmt = $conn->prepare("SELECT * FROM brands");
-        $brandsStmt->execute();
-        $brands = $brandsStmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt_brands = $conn->prepare("SELECT id, name FROM brands");
+        $stmt_brands->execute();
+        $brands = $stmt_brands->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt = $conn->prepare(
+            "SELECT 
+                products.*, 
+                brands.name AS brand_name, 
+                categories.name AS category_name
+            FROM products
+            JOIN brands ON products.brand_id = brands.id
+            JOIN categories ON brands.category_id = categories.id
+            WHERE products.id = :id"
+        );
+        $stmt->execute([':id' => $product_id]);
+        $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$product) {
+            $error = "Không tìm thấy sản phẩm.";
+        }
     } catch (PDOException $e) {
         $error = "Lỗi cơ sở dữ liệu: " . $e->getMessage();
     }
+} else {
+    header("Location: danhsachsanpham.php");
+    exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $brand_id = intval($_POST['brand_id']);
+    $name = trim($_POST['name']);
+    $price = floatval($_POST['price']);
+    $discounted_price = floatval($_POST['discounted_price']);
+    $quantity = intval($_POST['quantity']);
+    $size = trim($_POST['size']);
+    $origin = trim($_POST['origin']);
+    $incense_group = trim($_POST['incense_group']);
+    $style = trim($_POST['style']);
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        // Lấy dữ liệu từ form
-        $name = $_POST['name'];
-        $brand_id = $_POST['brand_id'];
-        $price = $_POST['price'];
-        $discounted_price = $_POST['discounted_price'];
-        $quantity = $_POST['quantity'];
-        $size = $_POST['size'];
-        $origin = $_POST['origin'];
-        $incense_group = $_POST['incense_group'];
-        $style = $_POST['style'];
-        $product_image = $_FILES['product_image'];
-        if ($product_image['error'] == 0) {
-            $image_name = $product_image['name'];
-            $image_tmp_name = $product_image['tmp_name'];
-            $image_ext = pathinfo($image_name, PATHINFO_EXTENSION);
-            $image_new_name = uniqid('', true) . '.' . $image_ext;
-            $image_path = "../images/products/" . $image_new_name;
-            move_uploaded_file($image_tmp_name, $image_path);
-        } else {
-            $image_new_name = null; // Nếu không có ảnh, gán giá trị null
-        }
-
+    if (empty($name) || $price <= 0 || $quantity < 0 || !$brand_id) {
+        $error = "Vui lòng điền đầy đủ thông tin hợp lệ.";
+    } else {
         try {
-            $stmt = $conn->prepare("INSERT INTO products (name, brand_id, price, discounted_price, quantity, size, origin, incense_group, style) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$name, $brand_id, $price, $discounted_price, $quantity, $size, $origin, $incense_group, $style]);
+            $stmt = $conn->prepare(
+                "UPDATE products SET 
+                    brand_id = :brand_id,
+                    name = :name, 
+                    price = :price, 
+                    discounted_price = :discounted_price, 
+                    quantity = :quantity, 
+                    size = :size, 
+                    origin = :origin, 
+                    incense_group = :incense_group, 
+                    style = :style
+                WHERE id = :id"
+            );
+            $stmt->execute([
+                ':brand_id' => $brand_id,
+                ':name' => $name,
+                ':price' => $price,
+                ':discounted_price' => $discounted_price,
+                ':quantity' => $quantity,
+                ':size' => $size,
+                ':origin' => $origin,
+                ':incense_group' => $incense_group,
+                ':style' => $style,
+                ':id' => $product_id
+            ]);
 
-            $product_id = $conn->lastInsertId();
-            if ($image_new_name) {
-                $stmt = $conn->prepare("INSERT INTO products_imgs (product_id, images) VALUES (?, ?)");
-                $stmt->execute([$product_id, $image_new_name]);
-            }
             header("Location: danhsachsanpham.php");
             exit;
         } catch (PDOException $e) {
-            $error = "Lỗi cơ sở dữ liệu khi thêm sản phẩm: " . $e->getMessage();
+            $error = "Lỗi khi cập nhật sản phẩm: " . $e->getMessage();
         }
     }
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm sản phẩm</title>
+    <title>Sửa thương hiệu</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -95,15 +127,6 @@
         .content {
             margin-left: 250px;
             padding: 20px;
-        }
-        .header {
-            background-color: #007bff;
-            padding: 15px;
-            color: white;
-            font-size: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            border-radius: 8px;
         }
         .card {
             border-radius: 10px;
@@ -170,64 +193,69 @@
     <div class="content">
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Thêm sản phẩm mới</h4>
+                <h4 class="mb-0">Sửa sản phẩm</h4>
                 <span>Chào, <strong><?= htmlspecialchars($user_name) ?> (<?= strtoupper($user_type) ?>)</strong></span>
             </div>
             <div class="card-body">
-                <?php if (isset($error)): ?>
+                <?php if ($error): ?>
                     <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
                 <?php endif; ?>
+                <?php if ($success): ?>
+                    <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+                <?php endif; ?>
 
-                <form action="themsanpham.php" method="POST" enctype="multipart/form-data">
+                <form method="POST">
                     <div class="form-group">
                         <label for="name">Tên sản phẩm</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+                        <input type="text" name="name" id="name" class="form-control" value="<?= htmlspecialchars($product['name']) ?>" required>
                     </div>
                     <div class="form-group">
                         <label for="brand_id">Thương hiệu</label>
-                        <select class="form-control" id="brand_id" name="brand_id" required>
+                        <select name="brand_id" id="brand_id" class="form-control" required>
                             <option value="">Chọn thương hiệu</option>
                             <?php foreach ($brands as $brand): ?>
-                                <option value="<?= $brand['id'] ?>"><?= htmlspecialchars($brand['name']) ?></option>
+                                <option value="<?= htmlspecialchars($brand['id']) ?>" 
+                                    <?= $product['brand_id'] == $brand['id'] ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($brand['name']) ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="price">Giá</label>
-                        <input type="number" class="form-control" id="price" name="price" required>
+                        <input type="number" name="price" id="price" class="form-control" value="<?= htmlspecialchars($product['price']) ?>" required>
                     </div>
                     <div class="form-group">
                         <label for="discounted_price">Giá khuyến mãi</label>
-                        <input type="number" class="form-control" id="discounted_price" name="discounted_price">
+                        <input type="number" name="discounted_price" id="discounted_price" class="form-control" value="<?= htmlspecialchars($product['discounted_price']) ?>">
                     </div>
                     <div class="form-group">
                         <label for="quantity">Số lượng</label>
-                        <input type="number" class="form-control" id="quantity" name="quantity" required>
+                        <input type="number" name="quantity" id="quantity" class="form-control" value="<?= htmlspecialchars($product['quantity']) ?>" required>
                     </div>
                     <div class="form-group">
-                        <label for="size">Size (ml)</label>
-                        <input type="number" class="form-control" id="size" name="size" required>
+                        <label for="size">Dung tích (ml)</label>
+                        <input type="text" name="size" id="size" class="form-control" value="<?= htmlspecialchars($product['size']) ?>">
                     </div>
                     <div class="form-group">
                         <label for="origin">Xuất xứ</label>
-                        <input type="text" class="form-control" id="origin" name="origin" required>
+                        <input type="text" name="origin" id="origin" class="form-control" value="<?= htmlspecialchars($product['origin']) ?>">
                     </div>
                     <div class="form-group">
                         <label for="incense_group">Nhóm hương</label>
-                        <input type="text" class="form-control" id="incense_group" name="incense_group">
+                        <input type="text" name="incense_group" id="incense_group" class="form-control" value="<?= htmlspecialchars($product['incense_group']) ?>">
                     </div>
                     <div class="form-group">
                         <label for="style">Phong cách</label>
-                        <input type="text" class="form-control" id="style" name="style">
+                        <input type="text" name="style" id="style" class="form-control" value="<?= htmlspecialchars($product['style']) ?>">
                     </div>
-                    <div class="form-group">
-                        <label for="product_image">Ảnh sản phẩm</label>
-                        <input type="file" class="form-control" id="product_image" name="product_image" accept="image/*">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
                 </form>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
