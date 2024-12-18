@@ -7,10 +7,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
 } else {
   $sql = "SELECT products.id AS product_id, products.name AS product_name, 
             brands.name AS brand_name, categories.name AS category_name, 
-            products.discounted_price, products_imgs.images FROM products 
+            products.discounted_price, MIN(products_imgs.images) AS images FROM products 
             INNER JOIN brands ON products.brand_id = brands.id 
             INNER JOIN products_imgs ON products.id = products_imgs.product_id
-            INNER JOIN categories ON brands.category_id = categories.id LIMIT 4";
+            INNER JOIN categories ON brands.category_id = categories.id 
+            GROUP BY products.id LIMIT 4";
   $stmt = $conn->prepare($sql);
   $stmt->execute();
   $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -31,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
       <div class="container p-row">
         <button class="carousel-btn left" onclick="moveLeft()">&lt;</button>
         <div class="carousel-track">
-          <?php if (!empty($products)): ?>
-            <?php foreach ($products as $product): ?>
+          <?php if (!empty($products)) {
+            foreach ($products as $product) { ?>
               <div class="p-item">
                 <?php
                 $productSlug = removeAccents($product['product_name']);
@@ -64,10 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
               </div>
               <div class="box-pro-detail">
               </div>
-            <?php endforeach; ?>
-          <?php else: ?>
+            <?php }
+          } else { ?>
             <p>Không có sản phẩm nào</p>
-          <?php endif; ?>
+          <?php } ?>
         </div>
         <button class="carousel-btn right" onclick="moveRight()">&gt;</button>
       </div>

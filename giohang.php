@@ -49,18 +49,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_product_id'])) 
     header("Location: giohang.php");
     exit();
 }
-
-$total = 0;
 ob_end_flush();
 ?>
 <main>
-    <form method="POST" action="" style="display:inline;">
-        <div class="container-cart">
-            <h1 class="my-4">Giỏ hàng</h1>
-            <p>(<?= getCartTotalItems() ?>) sản phẩm</p>
-            <?php if (!empty($cartItems)) { ?>
-                <div class="row">
-                    <div class="col-md-8">
+    <div class="container-cart">
+        <h1 class="my-4">Giỏ hàng</h1>
+        <p>(<?= getCartTotalItems() ?>) sản phẩm</p>
+        <?php if (!empty($cartItems)) { ?>
+            <div class="row">
+                <div class="col-md-8">
+                    <form method="POST" action="" style="display:inline;">
                         <?php foreach ($cartItems  as $item) { ?>
                             <div class="cart-item border-bottom">
                                 <div class="row align-items-center">
@@ -68,7 +66,6 @@ ob_end_flush();
                                         <?php
                                         $productSlug = removeAccents($item['product_name']);
                                         echo "<a class='pro-a-href' href='chitietSP.php?id={$item['product_id']}&slug={$productSlug}'>";
-                                        // $imageArray = explode(', ', $item['images']);
                                         if (!empty($item['first_image'])) {
                                             $categoryName = removeAccents($item['category_name']);
                                             $brandName = removeAccents($item['brand_name']);
@@ -108,7 +105,6 @@ ob_end_flush();
                                             <div class="col-12 text-right">
                                                 <input type="hidden" name="delete_product_id" value="<?php echo $item['product_id']; ?>">
                                                 <button type="submit" class="remove-item text-danger" style="border:none; background:none; cursor:pointer;">✕</button>
-
                                             </div>
                                         </div>
                                     </div>
@@ -118,26 +114,32 @@ ob_end_flush();
                         <?php
                         }
                         ?>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="cart-summary border p-3">
-                            <h5 class="mb-3">Tổng kết giỏ hàng</h5>
-                            <div class="totals">
-                                <p class="d-flex justify-content-between">Tạm tính: <span></span></p>
-                                <p class="d-flex justify-content-between">Phí vận chuyển: <span>Free</span></p>
-                                <hr>
-                                <p class="d-flex justify-content-between total-price text-danger font-weight-bold">
-                                    Tổng: <span></span>
-                                </p>
-                            </div>
-                            <button class="btn btn-block mt-3">Thanh toán</button>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <div class="cart-summary border p-3">
+                        <h5 class="mb-3">Tổng kết giỏ hàng</h5>
+                        <div class="totals">
+                            <p class="d-flex justify-content-between">Tạm tính: <span><?php echo number_format($total, 0, ',', '.'); ?>đ</span></p>
+                            <p class="d-flex justify-content-between">Phí vận chuyển: <span>Miễn phí</span></p>
+                            <hr>
+                            <p class="d-flex justify-content-between total-price text-danger font-weight-bold">
+                                Tổng: <span><?php echo number_format($total, 0, ',', '.'); ?>đ</span>
+                            </p>
                         </div>
+                        <form method="GET" action="order.php">
+                            <?php foreach ($cartItems as $item) { ?>
+                                <input type="hidden" name="id[]" value="<?php echo $item['product_id']; ?>">
+                                <input type="hidden" name="quantity[]" value="<?php echo $item['quantity']; ?>">
+                            <?php } ?>
+                            <button type="submit" class="btn btn-block mt-3">Thanh toán</button>
+                        </form>
                     </div>
                 </div>
-            <?php } else { ?>
-                <p>Giỏ hàng của bạn đang trống.</p>
-            <?php } ?>
-        </div>
-    </form>
+            </div>
+        <?php } else { ?>
+            <p>Giỏ hàng của bạn đang trống.</p>
+        <?php } ?>
+    </div>
 </main>
 <?php include "layout/footer.php"; ?>

@@ -6,16 +6,17 @@
         header("Location: user_account/dangnhap.php");
         exit();
     }
-    $sql = "SELECT categories.name AS category_name, 
+    $sqlCate = "SELECT categories.name AS category_name, 
                 brands.name AS brand_name FROM brands INNER JOIN categories
                 ON brands.category_id = categories.id
                 ORDER BY categories.name, brands.name";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmtCate = $conn->prepare($sqlCate);
+    $stmtCate->execute();
+    $categories = $stmtCate->fetchAll(PDO::FETCH_ASSOC);
     $categoryBrands = [];
 
     if (isset($_SESSION['user_id'])) {
+        $total = 0;
         $user_id = $_SESSION['user_id'];
         $sqlUser = "SELECT first_name, last_name, phone, email FROM users WHERE id = :id";
         $stmtUser = $conn->prepare($sqlUser);
@@ -32,6 +33,11 @@
         $stmtCart = $conn->prepare($sqlCart);
         $stmtCart->execute([$user_id]);
         $cartItems = $stmtCart->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach($cartItems as $item){
+            $totalPro = $item['discounted_price'] * $item['quantity'];
+            $total += $totalPro;
+        }
     }
 
 
@@ -151,23 +157,6 @@
                 font-weight: bold;
             }
 
-            /* Nút thanh toán */
-            .checkout-btn {
-                width: 100%;
-                background-color: red;
-                color: #fff;
-                border: none;
-                padding: 12px 0;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-                border-radius: 4px;
-            }
-
-            .checkout-btn:hover {
-                background-color: darkred;
-            }
-
             .small-text {
                 font-size: 0.9rem;
             }
@@ -175,11 +164,6 @@
             .small-heading {
                 font-size: 1rem;
             }
-
-            .btn {
-                color: #fff;
-            }
-
             .btn:hover {
                 color: #fff;
             }

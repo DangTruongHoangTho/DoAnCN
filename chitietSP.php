@@ -39,7 +39,7 @@ $productCategoryId = $product['category_id'];
 $categoryNameInf = $product['category_name'] ?? '';
 $brandNameInf = $product['brand_name'] ?? '';
 $sqlRelated = "SELECT p.id AS product_id, p.name AS product_name, c.name AS category_name, 
-              b.name AS brand_name, p.price, MIN(pi.images) AS image FROM products p
+              b.name AS brand_name, p.discounted_price, MIN(pi.images) AS image FROM products p
               INNER JOIN brands b ON p.brand_id = b.id INNER JOIN categories c ON b.category_id = c.id
               INNER JOIN products_imgs pi ON p.id = pi.product_id WHERE b.category_id = :category_id 
               AND p.id != :product_id GROUP BY p.id, p.name, c.name, b.name, p.price  LIMIT 4";
@@ -49,6 +49,10 @@ $relatedProducts = $stmtRelated->fetchAll(PDO::FETCH_ASSOC);
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (!isset($_SESSION['user_id'])) {
+    header("Location: user_account/dangnhap.php");
+    exit();
+  }
   $productIdCart = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 1;
 
   $stmtCart = $conn->prepare("SELECT id, quantity FROM carts WHERE user_id = ? AND product_id = ?");
@@ -124,7 +128,9 @@ ob_end_flush();
                 <li>Thương hiệu: <span><strong><?php echo htmlspecialchars($product['brand_name']); ?></strong></span></li>
                 <li>Size: <span><strong><?php echo htmlspecialchars($product['size']); ?></strong> ml</span></li>
               </ul>
-              <h6><p class="mb-0 text-muted"><s><?php echo number_format($product['price'], 0, ',', '.'); ?>đ</s></h6>
+              <h6>
+                <p class="mb-0 text-muted"><s><?php echo number_format($product['price'], 0, ',', '.'); ?>đ</s>
+              </h6>
               <div class="product__details__price"><?php echo number_format($product['discounted_price'], 0, ',', '.') . " ₫"; ?></div>
 
               <form method="POST" action="">
@@ -135,7 +141,7 @@ ob_end_flush();
                     </div>
                   </div>
                 </div>
-                <a href="./order.php?id=<?php echo $productId; ?>" onclick="handleOrder(event, <?php echo $productId; ?>, <?php echo htmlspecialchars($product['name']); ?>, <?php echo $product['price']; ?>)" class="primary-btn">Đặt hàng</a>
+                <a href="javascript:void(0)" class="primary-btn" onclick="redirectToOrder(<?php echo $productId; ?>)">Đặt hàng</a>
                 <input type="hidden" name="product_id" value="<?php echo $productId; ?>">
                 <input type="hidden" name="slug" value="<?php echo $productSlug; ?>">
                 <button type="submit" class="primary-btn">Thêm vào giỏ hàng</button>
@@ -219,9 +225,9 @@ ob_end_flush();
                 <div class="description-content">
                   <div class="description-productdetail collapsed">
                     <?php
-                    $paragraphs = explode("\n", $product['description']); // Tách chuỗi thành mảng các đoạn
+                    $paragraphs = explode("\n", $product['description']);
                     foreach ($paragraphs as $paragraph) {
-                      if (trim($paragraph)) { // Bỏ qua đoạn trống
+                      if (trim($paragraph)) {
                         echo '<p>' . htmlspecialchars($paragraph) . '</p>';
                       }
                     }
@@ -429,7 +435,7 @@ ob_end_flush();
                     echo "<a class='pro-a-href' href='chitietSP.php?id={$related['product_id']}&slug={$relatedSlug}'>{$related['product_name']}</a>";
                     ?>
                   </h6>
-                  <h5><?php echo number_format($related['price'], 0, ',', '.') . " ₫"; ?></h5>
+                  <h5><?php echo number_format($related['discounted_price'], 0, ',', '.') . " ₫"; ?></h5>
                 </div>
               </div>
 

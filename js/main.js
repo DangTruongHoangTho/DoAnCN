@@ -132,18 +132,6 @@ function ajax_giohang() {
   });
 }
 
-function handleOrder(event, productId, productName, productPrice) {
-  event.preventDefault();
-
-  const quantityElement = document.getElementById("quantity");
-  const quantity = quantityElement
-    ? parseInt(quantityElement.value, 10) || 1
-    : 1;
-
-  addToCart(productId, productName, productPrice, quantity);
-  window.location.href = "./order.php";
-}
-
 let currentIndex = 0;
 const track = document.querySelector(".carousel-track");
 const items = document.querySelectorAll(".p-item");
@@ -169,16 +157,40 @@ function enableEditMode() {
   document
     .querySelectorAll("#editForm input")
     .forEach((input) => input.removeAttribute("disabled"));
-  document.getElementById("btnEdit").classList.add("d-none"); // Ẩn nút "Chỉnh sửa"
-  document.getElementById("btnSave").classList.remove("d-none"); // Hiện nút "Lưu"
-  document.getElementById("btnCancel").classList.remove("d-none"); // Hiện nút "Hủy"
+  document.getElementById("btnEdit").classList.add("d-none");
+  document.getElementById("btnSave").classList.remove("d-none");
+  document.getElementById("btnCancel").classList.remove("d-none");
 }
 
 function disableEditMode() {
   document
     .querySelectorAll("#editForm input")
     .forEach((input) => input.setAttribute("disabled", true));
-  document.getElementById("btnEdit").classList.remove("d-none"); // Hiện nút "Chỉnh sửa"
-  document.getElementById("btnSave").classList.add("d-none"); // Ẩn nút "Lưu"
-  document.getElementById("btnCancel").classList.add("d-none"); // Ẩn nút "Hủy"
+  document.getElementById("btnEdit").classList.remove("d-none");
+  document.getElementById("btnSave").classList.add("d-none");
+  document.getElementById("btnCancel").classList.add("d-none");
+}
+
+function clearActiveClass() {
+  document
+    .querySelectorAll(".sidebar a")
+    .forEach((link) => link.classList.remove("active"));
+}
+
+// Hiển thị danh sách đơn hàng
+function showOrders() {
+  document.getElementById("accountInfo").classList.add("d-none");
+  document.getElementById("orderList").classList.remove("d-none");
+
+  clearActiveClass();
+  document.getElementById("ordersLink").classList.add("active");
+}
+
+// Hiển thị thông tin tài khoản
+function showAccountInfo() {
+  document.getElementById("orderList").classList.add("d-none");
+  document.getElementById("accountInfo").classList.remove("d-none");
+
+  clearActiveClass();
+  document.getElementById("accountLink").classList.add("active");
 }

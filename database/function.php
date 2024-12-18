@@ -67,10 +67,6 @@ function removeAccents($string)
 
     return $string;
 }
-function getCartItems()
-{
-    return $_SESSION['cart'] ?? [];
-}
 
 function getCartTotalItems()
 {

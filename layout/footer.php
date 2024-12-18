@@ -110,6 +110,10 @@
          body: `id=${productId}&slug=${productSlug}`
        });
    }
+   function redirectToOrder(productId) {
+        const quantity = document.getElementById('quantity').value;
+        window.location.href = `order.php?id=${productId}&quantity=${quantity}`;
+    }
  </script>
  </body>
 

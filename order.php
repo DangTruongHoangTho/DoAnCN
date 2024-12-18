@@ -1,118 +1,119 @@
 <?php
 include "database/connect.php";
+include "database/function.php";
 session_start();
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $productId = $_GET['id'];
-    $quantity = isset($_POST['quantity']) && is_numeric($_POST['quantity']) && $_POST['quantity'] > 0 ? intval($_POST['quantity']) : 1;
+if (!isset($_SESSION['user_id'])) {
+    header("Location: user_account/dangnhap.php");
+    exit();
+}
 
+$user_id = $_SESSION['user_id'];
 
-    // Truy vấn lấy thông tin sản phẩm từ CSDL
-    $stmt = $conn->prepare("SELECT p.*, b.name AS brand_name, b.category_id, categories.name AS category_name,
-                            products_imgs.images FROM products p
-                            JOIN brands b ON p.brand_id = b.id
-                            INNER JOIN products_imgs ON p.id = products_imgs.product_id
-                            JOIN categories ON b.category_id = categories.id WHERE p.id = :id");
-    $stmt->bindParam(':id', $productId, PDO::PARAM_INT);
-    $stmt->execute();
-
-    // Lấy sản phẩm
-    $product = $stmt->fetch(PDO::FETCH_ASSOC);
-
-
-    $sql = "SELECT categories.name AS category_name, 
-    brands.name AS brand_name FROM brands INNER JOIN categories
-    ON brands.category_id = categories.id
-    ORDER BY categories.name, brands.name";
-    $stmtCate = $conn->prepare($sql);
-    $stmtCate->execute();
-    $categories = $stmtCate->fetchAll(PDO::FETCH_ASSOC);
-    $categoryBrands = [];
-
-    foreach ($categories as $category) {
-        $categoryBrands[$category['category_name']][] = $category['brand_name'];
-    }
-    function removeAccents($string)
-    {
-        $accents = [
-            'a' => ['á', 'à', 'ả', 'ã', 'ạ', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ', 'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ', 'a'],
-            'e' => ['é', 'è', 'ẻ', 'ẽ', 'ẹ', 'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ', 'e'],
-            'i' => ['í', 'ì', 'ỉ', 'ĩ', 'ị', 'i'],
-            'o' => ['ó', 'ò', 'ỏ', 'õ', 'ọ', 'ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ', 'ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ', 'o'],
-            'u' => ['ú', 'ù', 'ủ', 'ũ', 'ụ', 'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự', 'u'],
-            'y' => ['ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ', 'y'],
-            'd' => ['đ', 'd'],
-        ];
-
-        foreach ($accents as $nonAccent => $accent) {
-            $string = str_replace($accent, $nonAccent, $string);
-        }
-
-        $string = str_replace(' ', '-', $string);
-
-        return $string;
+if (isset($_GET['id']) || is_array($_GET['id'])) {
+    $productIds = isset($_GET['id']) ? (array)$_GET['id'] : [];
+    $quantities = isset($_GET['quantity']) ? $_GET['quantity'] : [];
+    if (!is_array($_GET['id'])) {
+        $_GET['id'] = [$_GET['id']];
     }
 
-    // Giá sản phẩm từ database
-    $price = $product['price'];
+    $cartItems = [];
+    foreach ($productIds as $key => $productId) {
+        if (is_numeric($productId)) {
+            $quantity = isset($quantities[$key]) && is_numeric($quantities[$key]) ? intval($quantities[$key]) : 1;
+            $stmt = $conn->prepare("SELECT p.*, b.name AS brand_name, b.category_id, categories.name AS category_name,
+                                    (SELECT images FROM products_imgs WHERE product_id = p.id LIMIT 1) AS images 
+                                    FROM products p JOIN brands b ON p.brand_id = b.id
+                                    JOIN categories ON b.category_id = categories.id WHERE p.id = :id");
+            $stmt->bindParam(':id', $productId, PDO::PARAM_INT);
+            $stmt->execute();
+            $product = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($product) {
+                $existingKey = array_search($productId, array_column($cartItems, 'product_id'));
+                if ($existingKey !== false) {
+                    $cartItems[$existingKey]['quantity'] += $quantity;
+                    $cartItems[$existingKey]['subtotal'] = $cartItems[$existingKey]['quantity'] * $cartItems[$existingKey]['price'];
+                } else {
+                    $cartItems[] = [
+                        'product_id' => $productId,
+                        'quantity' => $quantity,
+                        'price' => $product['discounted_price'],
+                        'subtotal' => $product['discounted_price'] * $quantity,
+                        'name' => $product['name'],
+                        'images' => $product['images'],
+                        'brand_name' => $product['brand_name'],
+                        'category_name' => $product['category_name'],
+                    ];
+                }
 
-    // Tính tạm tính và tổng cộng
-    $subtotal = $price * $quantity;
-    $total = $subtotal; // Phí vận chuyển = 0
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    foreach ($cartItems as $item) {
+                        $user_id = $_SESSION['user_id'];
+                        $status = 'processing';
+                        $created_at = date('Y-m-d H:i:s');
+                        $updated_at = $created_at;
+                        $consignee_name = isset($_POST['fullname']) ? $_POST['fullname'] : '';
 
-    if (!$product) {
-        $error = "Sản phẩm không tồn tại!";
-    } else {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
-            $user_id = $_SESSION['user_id'];
-            $status = 'processing';
-            $created_at = date('Y-m-d H:i:s');
-            $updated_at = $created_at;
-            $consignee_name = isset($_POST['fullname']) ? $_POST['fullname'] : '';
+                        $address = isset($_POST['address']) ? $_POST['address'] : '';
+                        $city = isset($_POST['city']) ? $_POST['city'] : '';
+                        $district = isset($_POST['district']) ? $_POST['district'] : '';
+                        $ward = isset($_POST['ward']) ? $_POST['ward'] : '';
 
-            $address = isset($_POST['address']) ? $_POST['address'] : '';
-            $city = isset($_POST['city']) ? $_POST['city'] : '';
-            $district = isset($_POST['district']) ? $_POST['district'] : '';
-            $ward = isset($_POST['ward']) ? $_POST['ward'] : '';
+                        $consignee_address = $address . ', ' . $ward . ', ' . $district . ', ' . $city;
+                        $consignee_phone_number = isset($_POST['phone']) ? $_POST['phone'] : '';
+                        $delivery_date = date('Y-m-d', strtotime("+2 days"));
+                        $payment_method = isset($_POST['payment']) ? $_POST['payment'] : 'cod';
+                        $total_quantity = array_sum(array_column($cartItems, 'quantity'));
+                        $total_price = array_sum(array_column($cartItems, 'subtotal'));
 
-            $consignee_address = $address . ', ' . $ward . ', ' . $district . ', ' . $city;
-            $consignee_phone_number = isset($_POST['phone']) ? $_POST['phone'] : '';
-            $delivery_date = date('Y-m-d', strtotime("+2 days"));
-            $payment_method = isset($_POST['payment']) ? $_POST['payment'] : 'cod';
+                        $stmtOrder = $conn->prepare("INSERT INTO orders (user_id, status, created_at, updated_at, consignee_name, consignee_address, consignee_phone_number, delivery_date, payment_method, total_quantity, total_price)
+                                                     VALUES (:user_id, :status, :created_at, :updated_at, :consignee_name, :consignee_address, :consignee_phone_number, :delivery_date, :payment_method, :total_quantity, :total_price)");
+                        $stmtOrder->execute([
+                            ':user_id' => $user_id,
+                            ':status' => $status,
+                            ':created_at' => $created_at,
+                            ':updated_at' => $updated_at,
+                            ':consignee_name' => $consignee_name,
+                            ':consignee_address' => $consignee_address,
+                            ':consignee_phone_number' => $consignee_phone_number,
+                            ':delivery_date' => $delivery_date,
+                            ':payment_method' => $payment_method,
+                            ':total_quantity' => $total_quantity,
+                            ':total_price' => $total_price
+                        ]);
 
-            $stmtOrder = $conn->prepare("INSERT INTO orders (user_id, status, created_at, updated_at, consignee_name, consignee_address, consignee_phone_number, delivery_date, payment_method)
-                                     VALUES (:user_id, :status, :created_at, :updated_at, :consignee_name, :consignee_address, :consignee_phone_number, :delivery_date, :payment_method)");
-            $stmtOrder->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-            $stmtOrder->bindParam(':status', $status, PDO::PARAM_STR);
-            $stmtOrder->bindParam(':created_at', $created_at, PDO::PARAM_STR);
-            $stmtOrder->bindParam(':updated_at', $updated_at, PDO::PARAM_STR);
-            $stmtOrder->bindParam(':consignee_name', $consignee_name, PDO::PARAM_STR);
-            $stmtOrder->bindParam(':consignee_address', $consignee_address, PDO::PARAM_STR);
-            $stmtOrder->bindParam(':consignee_phone_number', $consignee_phone_number, PDO::PARAM_STR);
-            $stmtOrder->bindParam(':delivery_date', $delivery_date, PDO::PARAM_STR);
-            $stmtOrder->bindParam(':payment_method', $payment_method, PDO::PARAM_STR);
-            $stmtOrder->execute();
+                        $orderId = $conn->lastInsertId();
 
-            $orderId = $conn->lastInsertId();
-            $stmtDetail = $conn->prepare("INSERT INTO order_details (order_id, product_id, quantity, price, total_quantity, total)
-                                     VALUES (:order_id, :product_id, :quantity, :price, :total_quantity, :total)");
-            $stmtDetail->execute([
-                ':order_id' => $orderId,
-                ':product_id' => $productId,
-                ':quantity' => $quantity,
-                ':price' => $product['price'],
-                ':total_quantity' => $quantity,
-                ':total' => $product['price'] * $quantity
-            ]);
+                        $stmtDetail = $conn->prepare("INSERT INTO order_details (order_id, product_id, quantity, price)
+                                                     VALUES (:order_id, :product_id, :quantity, :price)");
 
+                        $stmtDetail->execute([
+                            ':order_id' => $orderId,
+                            ':product_id' => $item['product_id'],
+                            ':quantity' => $item['quantity'],
+                            ':price' => $item['price'],
+                        ]);
 
-            // header("Location: order-confirmation.php");
-            // exit();
+                        $delete_product_id = $item['product_id'];
+                        if (isset($_SESSION['cart'][$delete_product_id])) {
+                            unset($_SESSION['cart'][$delete_product_id]);
+                        }
+                        $sqlDelete = "DELETE FROM carts WHERE user_id = :user_id AND product_id = :product_id";
+                        $stmtDelete = $conn->prepare($sqlDelete);
+                        $stmtDelete->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+                        $stmtDelete->bindParam(':product_id', $delete_product_id, PDO::PARAM_INT);
+                        $stmtDelete->execute();
+                    }
+                    header("Location: order-confirmation.php");
+                    exit();
+                }
+            } else {
+                $error = "Sản phẩm không tồn tại!";
+            }
         }
     }
 } else {
     $error = "ID sản phẩm không hợp lệ!";
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -192,6 +193,12 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .info_pro {
+            flex: 1;
+            text-align: left;
         }
 
         .product img {
@@ -282,35 +289,41 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             <?php if (isset($error)): ?>
                 <p class="error"><?php echo $error; ?></p>
             <?php else: ?>
-                <div class="product" style="display: flex; align-items: center;">
+                <?php if (!empty($cartItems)) {
+                    $subtotal = number_format(array_sum(array_column($cartItems, 'subtotal')), 0, ',', '.');
+                    $total = $subtotal;
+                    foreach ($cartItems as $item) {
+                ?>
+                        <div class="product" style="display: flex; align-items: center;">
+                            <?php
+                            $imageArray = explode(', ', $item['images']);
+                            if (!empty($imageArray[0])) {
+                                $categoryName = removeAccents($item['category_name']);
+                                $brandName = removeAccents($item['brand_name']);
 
-                    <?php
-                    $imageArray = explode(', ', $product['images']);
-                    if (!empty($imageArray[0])) {
-                        $categoryName = removeAccents($product['category_name']);
-                        $brandName = removeAccents($product['brand_name']);
-
-                        $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
-                        $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
-                        $imagePath = "./images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
-                    ?>
-                        <img
-                            src="<?php echo $imagePath; ?>"
-                            alt=""
-                            class="w-50" />
-                    <?php } ?>
-                    <!-- Thông tin sản phẩm -->
-                    <div>
-                        <span><?php echo htmlspecialchars($product['name']); ?></span><br>
-                        <span><?php echo number_format($product['price'], 0, ',', '.'); ?>đ x<?php echo $quantity ?></span>
+                                $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
+                                $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
+                                $imagePath = "./images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
+                            ?>
+                                <img
+                                    src="<?php echo $imagePath; ?>"
+                                    alt=""
+                                    class="w-50" />
+                            <?php } ?>
+                            <!-- Thông tin sản phẩm -->
+                            <div class="info_pro">
+                                <span><?php echo htmlspecialchars($item['name']); ?></span><br>
+                                <span><?php echo number_format($item['price'], 0, ',', '.'); ?>đ x<?php echo $item['quantity'] ?></span>
+                            </div>
+                        </div> <?php }
+                                ?>
+                    <div class="total">
+                        <p>Tạm tính: <?php echo $subtotal; ?>đ</p>
+                        <p>Phí vận chuyển: Miễn phí</p>
+                        <p style="font-size: 18px; color: red;">Tổng cộng: <?php echo $total; ?>đ</p>
                     </div>
-                </div>
-                <div class="total">
-                    <p>Tạm tính: <?php echo number_format($subtotal, 0, ',', '.'); ?>đ</p>
-                    <p>Phí vận chuyển: Miễn phí</p>
-                    <p style="font-size: 18px; color: red;">Tổng cộng: <?php echo number_format($total, 0, ',', '.'); ?>đ</p>
-                </div>
-            <?php endif; ?>
+            <?php }
+            endif; ?>
         </div>
     </div>
 </body>
