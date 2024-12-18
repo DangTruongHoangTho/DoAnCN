@@ -14,37 +14,37 @@
             switch ($type) {
                 case 'category':
                     $stmt = $conn->prepare("DELETE FROM categories WHERE id = :id");
+                    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                    $stmt->execute();
+                    header("Location: danhsachdanhmuc.php");
                     break;
                 
                 case 'brand':
                     $stmt = $conn->prepare("DELETE FROM brands WHERE id = :id");
+                    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                    $stmt->execute();
+                    header("Location: danhsachthuonghieu.php");
                     break;
                 
                 case 'product': 
+                    $stmt = $conn->prepare("DELETE FROM products_imgs WHERE product_id = :id");
+                    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                    $stmt->execute();
+
                     $stmt = $conn->prepare("DELETE FROM products WHERE id = :id");
+                    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                    $stmt->execute();
+
+                    header("Location: danhsachsanpham.php");
                     break;
                 
                 default:
-                    die("Loại đối tượng không hợp lệ.");
-            }
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-            switch ($type) {
-                case 'category':
-                    header("Location: danhsachdanhmuc.php");
-                    break;
-                case 'brand':
-                    header("Location: danhsachthuonghieu.php");
-                    break;
-                case 'product':
-                    header("Location: danhsachsanpham.php");
-                    break;
-            }
-            exit;
-        } catch (PDOException $e) {
-            die("Lỗi cơ sở dữ liệu: " . $e->getMessage());
+                die("Loại đối tượng không hợp lệ.");
         }
-    } else {
-        die("Thông tin xóa không hợp lệ.");
+    } catch (PDOException $e) {
+        die("Lỗi cơ sở dữ liệu: " . htmlspecialchars($e->getMessage()));
     }
+} else {
+    die("Thông tin xóa không hợp lệ.");
+}
 ?>

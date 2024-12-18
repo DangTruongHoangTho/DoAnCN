@@ -3,7 +3,7 @@
     session_start();
     include '../database/connect.php';
     
-    if (!isset($_SESSION['user']) || $_SESSION['user']['type'] !== 'staff') {
+    if (!isset($_SESSION['user'])|| $_SESSION['user']['type'] !== 'staff') {
         header("Location: index.php"); 
         exit;
     }
@@ -25,8 +25,6 @@
     } catch (PDOException $e) {
         $error = "Lỗi cơ sở dữ liệu: " . $e->getMessage();
     }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -102,13 +100,15 @@
         <a href="themthuonghieu.php">Thêm thương hiệu</a>
         <a href="danhsachsanpham.php">Danh sách sản phẩm</a>
         <a href="themsanpham.php">Thêm sản phẩm</a>
+        <a href="danhsachdonhang.php">Danh sách đơn hàng</a>
         <a href="dangxuat.php" class="text-danger">Đăng xuất</a>
     </div>
 
-    <!-- Main Content -->
+    <!-- Content -->
     <div class="content">
+        <!-- Header -->
         <div class="header">
-            <h3>Chào, <?= htmlspecialchars($user_name) ?> (<?= strtoupper($user_type) ?>)</h3>
+            <h3>Xin chào, <?= htmlspecialchars($user_name) ?> (<?= strtoupper($user_type) ?>)</h3>
         </div>
         <!-- Dashboard Cards -->
         <div class="row">
@@ -145,7 +145,6 @@
                 </div>
             </div>
         </div>
-        
     </div>
 </body>
 </html>

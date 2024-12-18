@@ -3,7 +3,7 @@
     session_start();
     include '../database/connect.php';
     
-    if (!isset($_SESSION['user']) || $_SESSION['user']['type'] !== 'admin') {
+    if (!isset($_SESSION['user'])) {
         header("Location: index.php");
         exit;
     }
@@ -137,6 +137,7 @@
         <a href="themthuonghieu.php">Thêm thương hiệu</a>
         <a href="danhsachsanpham.php">Danh sách sản phẩm</a>
         <a href="themsanpham.php">Thêm sản phẩm</a>
+        <a href="danhsachdonhang.php">Danh sách đơn hàng</a>
         <a href="dangxuat.php" class="text-danger">Đăng xuất</a>
     </div>
 

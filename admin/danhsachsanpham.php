@@ -3,7 +3,7 @@
     session_start();
     include '../database/connect.php';
     
-    if (!isset($_SESSION['user']) || $_SESSION['user']['type'] !== 'admin') {
+    if (!isset($_SESSION['user'])) {
         header("Location: index.php");
         exit;
     }
@@ -117,6 +117,7 @@
         <a href="themthuonghieu.php">Thêm thương hiệu</a>
         <a href="danhsachsanpham.php">Danh sách sản phẩm</a>
         <a href="themsanpham.php">Thêm sản phẩm</a>
+        <a href="danhsachdonhang.php">Danh sách đơn hàng</a>
         <a href="dangxuat.php" class="text-danger">Đăng xuất</a>
     </div>
 
@@ -165,20 +166,22 @@
                             <td><?= htmlspecialchars($product['incense_group']) ?></td>
                             <td><?= htmlspecialchars($product['style']) ?></td>
                             <td>
-                                <?php if ($product['product_image']): ?>
-                                    <?php 
-                                        $product_folder = strtolower($product['name']);
-                                        $brand_folder = strtolower($product['brand_name']);
-                                        $category_folder = strtolower($product['category_name']);
-                                        $image_path = "../images/categories/{$category_folder}/{$brand_folder}/{$product_folder}/" . htmlspecialchars($product['product_image']);
-                                    ?>
-                                    <img src="<?= $image_path ?>" alt="" width="100">
+                                <?php 
+                                    // Kiểm tra nếu có ảnh
+                                    if (!empty($product['product_image'])): 
+                                        // Tạo đường dẫn ảnh
+                                        $categoryFolder = strtolower(str_replace(' ', '-', $product['category_name']));
+                                        $brandFolder = strtolower(str_replace(' ', '-', $product['brand_name']));
+                                        $productFolder = strtolower(str_replace(' ', '-', $product['name']));
+                                        $imagePath = "../images/categories/{$categoryFolder}/{$brandFolder}/{$productFolder}/" . htmlspecialchars($product['product_image']);
+                                ?>
+                                    <img src="<?= $imagePath ?>" alt="Ảnh sản phẩm" width="100">
                                 <?php else: ?>
                                     <span>Không có ảnh</span>
                                 <?php endif; ?>
                             </td>
                             <td class="text-center">
-                                <a href="products_edit.php?id=<?= $product['id'] ?>" class="btn btn-sm btn-primary">Sửa</a>
+                                <a href="suasanpham.php?id=<?= $product['id'] ?>" class="btn btn-sm btn-primary">Sửa</a>
                                 <a href="xoa.php?id=<?= $product['id'] ?>&type=product" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">Xóa</a>
                             </td>
                         </tr>
@@ -190,29 +193,3 @@
     </div>
 </body>
 </html>
-<!-- <?php if (!empty($products)) {
-            foreach ($products as $product) { ?>
-              <div class="p-item">
-                <?php
-                $productSlug = removeAccents($product['product_name']);
-                echo "<a class='pro-a-href' href='chitietSP.php?id={$product['product_id']}&slug={$productSlug}'>";
-                $imageArray = explode(', ', $product['images']);
-                if (!empty($imageArray[0])) {
-                  $categoryName = removeAccents($product['category_name']);
-                  $brandName = removeAccents($product['brand_name']);
-
-                  $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
-                  $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
-                  $imagePath = "./images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
-                ?>
-                  <img
-                    src="<?php echo $imagePath; ?>"
-                    alt=""
-                    class="w-50" />
-                <?php echo "</a>";
-                } ?>
-                
-            <?php }
-          } else { ?>
-            <p>Không có sản phẩm nào</p>
-<?php } ?> -->

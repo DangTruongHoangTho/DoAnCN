@@ -10,45 +10,50 @@ if (!isset($_SESSION['user'])) {
 $user_name = $_SESSION['user']['name'];
 $user_type = $_SESSION['user']['type'];
 
-$error = '';
-$success = '';
-
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-
-    try {
-        $stmt = $conn->prepare("SELECT * FROM categories WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-        $category = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$category) {
-            $error = "Không tìm thấy danh mục.";
-        }
-    } catch (PDOException $e) {
-        $error = "Lỗi cơ sở dữ liệu: " . $e->getMessage();
-    }
-} else {
-    header("Location: danhsachdanhmuc.php");
+if (!isset($_GET['id'])) {
+    header("Location: danhsachthuonghieu.php");
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $category_name = trim($_POST['name']);
+$brand_id = intval($_GET['id']);
+$error = '';
+$success = '';
 
-    if (empty($category_name)) {
-        $error = "Tên danh mục không được để trống.";
-    } else {
-        try {
-            $stmt = $conn->prepare("UPDATE categories SET name = :name WHERE id = :id");
-            $stmt->execute([
-                ':name' => $category_name,
-                ':id' => $id
-            ]);
-            header("Location: danhsachdanhmuc.php");
-            exit;
-        } catch (PDOException $e) {
-            $error = "Lỗi khi cập nhật danh mục: " . $e->getMessage();
-        }
+try {
+    // Lấy thông tin thương hiệu hiện tại
+    $stmt = $conn->prepare("SELECT * FROM brands WHERE id = :id");
+    $stmt->bindParam(':id', $brand_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $brand = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$brand) {
+        header("Location: danhsachthuonghieu.php");
+        exit;
+    }
+
+    // Lấy danh sách danh mục
+    $stmt = $conn->prepare("SELECT id, name FROM categories");
+    $stmt->execute();
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $error = "Lỗi cơ sở dữ liệu: " . $e->getMessage();
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $brand_name = $_POST['name'];
+    $category_id = $_POST['category_id'];
+
+    try {
+        $stmt = $conn->prepare("UPDATE brands SET name = :name, category_id = :category_id WHERE id = :id");
+        $stmt->execute([
+            ':name' => $brand_name,
+            ':category_id' => $category_id,
+            ':id' => $brand_id
+        ]);
+        header("Location: danhsachthuonghieu.php");
+        exit;
+    } catch (PDOException $e) {
+        $error = "Lỗi khi cập nhật thương hiệu: " . $e->getMessage();
     }
 }
 ?>
@@ -58,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sửa danh mục</title>
+    <title>Sửa thương hiệu</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -153,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="content">
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Sửa danh mục</h4>
+                <h4 class="mb-0">Sửa thương hiệu</h4>
                 <span>Chào, <strong><?= htmlspecialchars($user_name) ?> (<?= strtoupper($user_type) ?>)</strong></span>
             </div>
             <div class="card-body">
@@ -164,18 +169,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
                 <?php endif; ?>
 
-                <?php if ($category): ?>
                 <form method="POST" action="">
                     <div class="form-group">
-                        <label for="name">Tên danh mục:</label>
-                        <input type="text" name="name" id="name" class="form-control" value="<?= htmlspecialchars($category['name']) ?>" required>
+                        <label for="name">Tên thương hiệu:</label>
+                        <input type="text" name="name" id="name" class="form-control" value="<?= htmlspecialchars($brand['name']) ?>" required>
                     </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn-custom">Cập nhật</button>
 
+                    <div class="form-group">
+                        <label for="category_id">Danh mục:</label>
+                        <select name="category_id" id="category_id" class="form-control" required>
+                            <option value="">-- Chọn danh mục --</option>
+                            <?php foreach ($categories as $category): ?>
+                                <option value="<?= $category['id'] ?>" <?= $category['id'] == $brand['category_id'] ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($category['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        <a href="danhsachdanhmuc.php" class="btn btn-secondary">Quay lại</a>
                     </div>
                 </form>
-                <?php endif; ?>
             </div>
         </div>
     </div>
