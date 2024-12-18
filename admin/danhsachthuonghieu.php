@@ -127,7 +127,7 @@
                             <td><?= htmlspecialchars($brand['category_name']) ?></td>
                             <td class="text-center">
                                 <a href="brands_edit.php?id=<?= $brand['id'] ?>" class="btn btn-sm btn-primary">Sửa</a>
-                                <a href="brands_delete.php?id=<?= $brand['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa thương hiệu này?')">Xóa</a>
+                                <a href="xoa.php?id=<?= $brand['id'] ?>&type=brand" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa thương hiệu này?')">Xóa</a>
                             </td>
                         </tr>
                         <?php endforeach; ?>

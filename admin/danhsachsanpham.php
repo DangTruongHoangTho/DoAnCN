@@ -178,8 +178,8 @@
                                 <?php endif; ?>
                             </td>
                             <td class="text-center">
-                                <a href="products_edit.php?id=<?= $product['id'] ?>" class="btn btn-sm btn-custom">Sửa</a>
-                                <a href="products_delete.php?id=<?= $product['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">Xóa</a>
+                                <a href="products_edit.php?id=<?= $product['id'] ?>" class="btn btn-sm btn-primary">Sửa</a>
+                                <a href="xoa.php?id=<?= $product['id'] ?>&type=product" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">Xóa</a>
                             </td>
                         </tr>
                         <?php endforeach; ?>

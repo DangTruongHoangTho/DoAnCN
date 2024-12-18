@@ -29,7 +29,6 @@
     <title>Danh sách danh mục</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        <style>
         body {
             background-color: #f8f9fa;
         }
@@ -123,8 +122,8 @@
                             <td><?= htmlspecialchars($category['id']) ?></td>
                             <td><?= htmlspecialchars($category['name']) ?></td>
                             <td class="text-center">
-                                <a href="categories_edit.php?id=<?= $category['id'] ?>" class="btn btn-sm btn-primary">Sửa</a>
-                                <a href="categories_delete.php?id=<?= $category['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa danh mục này?')">Xóa</a>
+                                <a href="suadanhmuc.php?id=<?= $category['id'] ?>" class="btn btn-sm btn-primary">Sửa</a>
+                                <a href="xoa.php?id=<?= $category['id'] ?>&type=category" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa danh mục này?')">Xóa</a>
                             </td>
                         </tr>
                         <?php endforeach; ?>
