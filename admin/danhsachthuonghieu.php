@@ -78,9 +78,10 @@
             vertical-align: middle;
         }
         .card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            background-color: white;
         }
     </style>
 </head>
@@ -125,7 +126,7 @@
                             <td><?= htmlspecialchars($brand['name']) ?></td>
                             <td><?= htmlspecialchars($brand['category_name']) ?></td>
                             <td class="text-center">
-                                <a href="brands_edit.php?id=<?= $brand['id'] ?>" class="btn btn-sm btn-custom">Sửa</a>
+                                <a href="brands_edit.php?id=<?= $brand['id'] ?>" class="btn btn-sm btn-primary">Sửa</a>
                                 <a href="brands_delete.php?id=<?= $brand['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa thương hiệu này?')">Xóa</a>
                             </td>
                         </tr>

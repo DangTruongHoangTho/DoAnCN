@@ -99,9 +99,10 @@
             vertical-align: middle;
         }
         .card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            background-color: white;
         }
     </style>
 </head>
@@ -189,3 +190,29 @@
     </div>
 </body>
 </html>
+<!-- <?php if (!empty($products)) {
+            foreach ($products as $product) { ?>
+              <div class="p-item">
+                <?php
+                $productSlug = removeAccents($product['product_name']);
+                echo "<a class='pro-a-href' href='chitietSP.php?id={$product['product_id']}&slug={$productSlug}'>";
+                $imageArray = explode(', ', $product['images']);
+                if (!empty($imageArray[0])) {
+                  $categoryName = removeAccents($product['category_name']);
+                  $brandName = removeAccents($product['brand_name']);
+
+                  $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
+                  $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
+                  $imagePath = "./images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
+                ?>
+                  <img
+                    src="<?php echo $imagePath; ?>"
+                    alt=""
+                    class="w-50" />
+                <?php echo "</a>";
+                } ?>
+                
+            <?php }
+          } else { ?>
+            <p>Không có sản phẩm nào</p>
+<?php } ?> -->

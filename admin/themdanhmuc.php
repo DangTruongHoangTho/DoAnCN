@@ -132,7 +132,7 @@
     <div class="content">
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Danh sách danh mục</h4>
+                <h4 class="mb-0">Thêm danh mục</h4>
                 <span>Chào, <strong><?= htmlspecialchars($user_name) ?> (<?= strtoupper($user_type) ?>)</strong></span>
             </div>
             <div class="card-body">

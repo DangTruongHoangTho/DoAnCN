@@ -29,6 +29,7 @@
     <title>Danh sách danh mục</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        <style>
         body {
             background-color: #f8f9fa;
         }
@@ -77,9 +78,10 @@
             vertical-align: middle;
         }
         .card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            background-color: white;
         }
     </style>
 </head>
@@ -121,7 +123,7 @@
                             <td><?= htmlspecialchars($category['id']) ?></td>
                             <td><?= htmlspecialchars($category['name']) ?></td>
                             <td class="text-center">
-                                <a href="categories_edit.php?id=<?= $category['id'] ?>" class="btn btn-sm btn-custom">Sửa</a>
+                                <a href="categories_edit.php?id=<?= $category['id'] ?>" class="btn btn-sm btn-primary">Sửa</a>
                                 <a href="categories_delete.php?id=<?= $category['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa danh mục này?')">Xóa</a>
                             </td>
                         </tr>
