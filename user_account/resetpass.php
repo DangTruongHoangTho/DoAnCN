@@ -45,6 +45,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đổi mật khẩu</title>
+    <link
+        rel="website icon"
+        type="png"
+        href="../images/banner/LogoT&T_2.png"
+        id="logo" />
     <!-- link ngoài -->
     <link
         rel="stylesheet"

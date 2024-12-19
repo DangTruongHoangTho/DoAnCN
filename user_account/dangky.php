@@ -81,6 +81,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Ký</title>
+    <link
+        rel="website icon"
+        type="png"
+        href="../images/banner/LogoT&T_2.png"
+        id="logo" />
     <!-- link ngoài -->
     <link
         rel="stylesheet"
@@ -93,9 +98,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- CSS -->
     <link rel="stylesheet" href="../css/bootstrap.min.css" />
     <link rel="stylesheet" href="../css/style.css" />
+    <style>
+        .header-right {
+            padding-top: 20px;
+            text-align: center !important;
+        }
+    </style>
 </head>
 
 <body>
+    <div class="header-right">
+        <a href="../index.php" class="brand"><img src="../images/banner/LogoT&T.png" alt="Logo" title="logo" /></a>
+    </div>
     <div class="dangnhap">
         <h2>Đã là thành viên?</h2>
         <p>Đăng nhập để truy cập vào tài khoản của bạn</p>

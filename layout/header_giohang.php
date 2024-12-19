@@ -56,7 +56,7 @@
         <link
             rel="website icon"
             type="png"
-            href="images/banner/Logo.png"
+            href="images/banner/LogoT&T_2.png"
             id="logo" />
         <!-- link ngoài -->
         <link
@@ -176,7 +176,7 @@
                 <!-- Logo Begin-->
                 <div class="flex-container row col-lg-8 col-md-12 col-sm-12">
                     <div class="header-right col-xl-2 col-lg-3 col-md-3 col-sm-3 col-3 w-25">
-                        <a href="index.php" class="brand"><img src="images/banner/Logo.png" alt="Logo" title="logo" /></a>
+                        <a href="index.php" class="brand"><img src="images/banner/LogoT&T.png" alt="Logo" title="logo" /></a>
                     </div>
                     <!-- Menu Begin-->
                     <div class="container menu-container col-lg-7 col-md-9 col-sm-9 col-9 text-center justify-content-end m-0 py-10">

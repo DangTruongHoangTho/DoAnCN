@@ -44,10 +44,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập</title>
+    <link
+        rel="website icon"
+        type="png"
+        href="../images/banner/LogoT&T_2.png"
+        id="logo" />
     <!-- link ngoài -->
     <link
         rel="stylesheet"
@@ -60,8 +66,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- CSS -->
     <link rel="stylesheet" href="../css/bootstrap.min.css" />
     <link rel="stylesheet" href="../css/style.css" />
+    <style>
+        .header-right {
+            padding-top: 20px;
+            text-align: center !important;
+        }
+    </style>
 </head>
+
 <body>
+    <div class="header-right">
+        <a href="../index.php" class="brand"><img src="../images/banner/LogoT&T.png" alt="Logo" title="logo" /></a>
+    </div>
     <div class="form-container-dangnhap">
         <h2>Đăng Nhập</h2>
         <?php if ($error): ?>
@@ -71,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <label for="email">Email*</label>
             <input type="email" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?> " placeholder="Email" required>
-            
+
             <label for="password">Mật khẩu*</label>
             <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
             <div class="checkbox-container">
@@ -88,4 +104,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <p>Trở thành thành viên của T&T Store<br>Để nhận những ưu đãi và dịch vụ bất ngờ</p>
         <a href="dangky.php" class="register-button">Đăng Ký</a>
     </div>
-<?php include "../layout/footer.php"; ?>
+    <?php include "../layout/footer.php"; ?>

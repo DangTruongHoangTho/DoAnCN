@@ -50,6 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập</title>
+    <link
+        rel="website icon"
+        type="png"
+        href="../images/banner/LogoT&T_2.png"
+        id="logo" />
     <style>
         .form-container {
             width: 400px;

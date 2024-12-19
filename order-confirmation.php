@@ -41,6 +41,11 @@ $paymentMethod = $order['payment_method'] === 'cod' ? 'Thanh toán khi nhận h�
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xác Nhận Đơn Hàng</title>
+    <link
+        rel="website icon"
+        type="png"
+        href="../images/banner/LogoT&T_2.png"
+        id="logo" />
     <style>
         body {
             font-family: Arial, sans-serif;

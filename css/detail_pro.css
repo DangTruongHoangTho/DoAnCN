@@ -32,7 +32,7 @@ body {
   display: flex;
 }
 .brand img {
-  height: 5rem;
+  height: 3rem;
   width: auto;
 }
 .nav_menu:hover {
