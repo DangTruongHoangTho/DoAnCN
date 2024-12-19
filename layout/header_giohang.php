@@ -23,7 +23,7 @@
         $stmtUser->execute(['id' => $user_id]);
         $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
 
-        $sqlCart = "SELECT c.id AS cart_id, p.id AS product_id, p.name AS product_name, categories.name AS category_name, 
+        $sqlCart = "SELECT c.id AS cart_id, p.id AS product_id, p.name AS product_name, p.quantity, categories.name AS category_name, 
                     b.name AS brand_name, c.quantity, p.price, p.discounted_price, MIN(pi.images) AS first_image FROM carts c
                     INNER JOIN products p ON c.product_id = p.id
                     INNER JOIN brands b ON p.brand_id = b.id    

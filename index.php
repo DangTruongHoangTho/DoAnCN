@@ -1,6 +1,6 @@
 <?php include "layout/header.php";
 include "layout/banner.php";
-
+loadCartFromDatabase($user_id, $conn);
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
   $searchTerm = $_GET['search'];
   $products = searchProducts($searchTerm);
@@ -38,21 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
                 <?php
                 $productSlug = removeAccents($product['product_name']);
                 echo "<a class='pro-a-href' href='chitietSP.php?id={$product['product_id']}&slug={$productSlug}'>";
-                $imageArray = explode(', ', $product['images']);
-                if (!empty($imageArray[0])) {
-                  $categoryName = removeAccents($product['category_name']);
-                  $brandName = removeAccents($product['brand_name']);
-
-                  $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
-                  $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
-                  $imagePath = "./images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
+                $imagePath = getImagePath($product['category_name'], $product['brand_name'], $product['images']);
                 ?>
                   <img
                     src="<?php echo $imagePath; ?>"
                     alt=""
                     class="w-50" />
                 <?php echo "</a>";
-                } ?>
+                 ?>
                 <div class="pro-vendor"><strong><?php echo htmlspecialchars($product['brand_name']); ?></strong></div>
                 <h6 class="pro-name">
                   <?php

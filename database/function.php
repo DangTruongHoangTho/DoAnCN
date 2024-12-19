@@ -16,7 +16,6 @@ function searchExactName($searchTerm)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Hàm tìm kiếm tên tương đối
 function searchRelativeName($searchTerm)
 {
     global $conn;
@@ -29,22 +28,19 @@ function searchRelativeName($searchTerm)
             INNER JOIN categories ON brands.category_id = categories.id 
             WHERE products.name LIKE :searchTerm";
     $stmt = $conn->prepare($sql);
-    $searchTerm = "%" . $searchTerm . "%";  // Bao quanh từ khóa với dấu phần trăm
+    $searchTerm = "%" . $searchTerm . "%";
     $stmt->bindParam(':searchTerm', $searchTerm);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Hàm tìm kiếm tổng hợp (tìm tên tuyệt đối trước, nếu không có thì tìm tên tương đối)
 function searchProducts($searchTerm)
 {
-    // Tìm kiếm tuyệt đối (khi người dùng nhập đúng tên)
     $exactResults = searchExactName($searchTerm);
     if (count($exactResults) > 0) {
-        return $exactResults; // Trả về kết quả nếu tìm thấy tên tuyệt đối
+        return $exactResults;
     }
 
-    // Nếu không tìm thấy, tìm kiếm tên tương đối
     return searchRelativeName($searchTerm);
 }
 function removeAccents($string)
@@ -67,10 +63,27 @@ function removeAccents($string)
 
     return $string;
 }
+function getImagePath($categoryName, $brandName, $imageName)
+{
+    $categoryName = removeAccents($categoryName);
+    $brandName = removeAccents($brandName);
+
+    $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
+    $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
+
+    $imagePath = "./images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . $imageName;
+
+    // Kiểm tra xem file ảnh có tồn tại không
+    if (!file_exists($imagePath)) {
+        $imagePath = "./images/default.jpg"; // Sử dụng ảnh mặc định nếu không tồn tại
+    }
+
+    return $imagePath;
+}
 
 function getCartTotalItems()
 {
-    if (!isset($_SESSION['cart'])) {
+    if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
         return 0;
     }
     $totalItems = 0;
@@ -92,7 +105,8 @@ function getCartTotalPrice()
     }
     return $totalPrice;
 }
-function loadCartFromDatabase($userId, $conn) {
+function loadCartFromDatabase($userId, $conn)
+{
     $sql = "SELECT product_id, quantity FROM carts WHERE user_id = :user_id";
     $stmt = $conn->prepare($sql);
     $stmt->execute(['user_id' => $userId]);

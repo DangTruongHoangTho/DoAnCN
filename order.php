@@ -44,72 +44,77 @@ if (isset($_GET['id']) || is_array($_GET['id'])) {
                         'category_name' => $product['category_name'],
                     ];
                 }
-
-                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                    foreach ($cartItems as $item) {
-                        $user_id = $_SESSION['user_id'];
-                        $status = 'processing';
-                        $created_at = date('Y-m-d H:i:s');
-                        $updated_at = $created_at;
-                        $consignee_name = isset($_POST['fullname']) ? $_POST['fullname'] : '';
-
-                        $address = isset($_POST['address']) ? $_POST['address'] : '';
-                        $city = isset($_POST['city']) ? $_POST['city'] : '';
-                        $district = isset($_POST['district']) ? $_POST['district'] : '';
-                        $ward = isset($_POST['ward']) ? $_POST['ward'] : '';
-
-                        $consignee_address = $address . ', ' . $ward . ', ' . $district . ', ' . $city;
-                        $consignee_phone_number = isset($_POST['phone']) ? $_POST['phone'] : '';
-                        $delivery_date = date('Y-m-d', strtotime("+2 days"));
-                        $payment_method = isset($_POST['payment']) ? $_POST['payment'] : 'cod';
-                        $total_quantity = array_sum(array_column($cartItems, 'quantity'));
-                        $total_price = array_sum(array_column($cartItems, 'subtotal'));
-
-                        $stmtOrder = $conn->prepare("INSERT INTO orders (user_id, status, created_at, updated_at, consignee_name, consignee_address, consignee_phone_number, delivery_date, payment_method, total_quantity, total_price)
-                                                     VALUES (:user_id, :status, :created_at, :updated_at, :consignee_name, :consignee_address, :consignee_phone_number, :delivery_date, :payment_method, :total_quantity, :total_price)");
-                        $stmtOrder->execute([
-                            ':user_id' => $user_id,
-                            ':status' => $status,
-                            ':created_at' => $created_at,
-                            ':updated_at' => $updated_at,
-                            ':consignee_name' => $consignee_name,
-                            ':consignee_address' => $consignee_address,
-                            ':consignee_phone_number' => $consignee_phone_number,
-                            ':delivery_date' => $delivery_date,
-                            ':payment_method' => $payment_method,
-                            ':total_quantity' => $total_quantity,
-                            ':total_price' => $total_price
-                        ]);
-
-                        $orderId = $conn->lastInsertId();
-
-                        $stmtDetail = $conn->prepare("INSERT INTO order_details (order_id, product_id, quantity, price)
-                                                     VALUES (:order_id, :product_id, :quantity, :price)");
-
-                        $stmtDetail->execute([
-                            ':order_id' => $orderId,
-                            ':product_id' => $item['product_id'],
-                            ':quantity' => $item['quantity'],
-                            ':price' => $item['price'],
-                        ]);
-
-                        $delete_product_id = $item['product_id'];
-                        if (isset($_SESSION['cart'][$delete_product_id])) {
-                            unset($_SESSION['cart'][$delete_product_id]);
-                        }
-                        $sqlDelete = "DELETE FROM carts WHERE user_id = :user_id AND product_id = :product_id";
-                        $stmtDelete = $conn->prepare($sqlDelete);
-                        $stmtDelete->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-                        $stmtDelete->bindParam(':product_id', $delete_product_id, PDO::PARAM_INT);
-                        $stmtDelete->execute();
-                    }
-                    header("Location: order-confirmation.php");
-                    exit();
-                }
             } else {
                 $error = "Sản phẩm không tồn tại!";
             }
         }
+    }
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $user_id = $_SESSION['user_id'];
+        $status = 'processing';
+        $created_at = date('Y-m-d H:i:s');
+        $updated_at = $created_at;
+        $consignee_name = isset($_POST['fullname']) ? $_POST['fullname'] : '';
+
+        $address = isset($_POST['address']) ? $_POST['address'] : '';
+        $city = isset($_POST['city']) ? $_POST['city'] : '';
+        $district = isset($_POST['district']) ? $_POST['district'] : '';
+        $ward = isset($_POST['ward']) ? $_POST['ward'] : '';
+
+        $consignee_address = $address . ', ' . $ward . ', ' . $district . ', ' . $city;
+        $consignee_phone_number = isset($_POST['phone']) ? $_POST['phone'] : '';
+        $delivery_date = date('Y-m-d', strtotime("+2 days"));
+        $payment_method = isset($_POST['payment']) ? $_POST['payment'] : 'cod';
+        $total_quantity = array_sum(array_column($cartItems, 'quantity'));
+        $total_price = array_sum(array_column($cartItems, 'subtotal'));
+
+        $stmtOrder = $conn->prepare("INSERT INTO orders (user_id, status, created_at, updated_at, consignee_name, consignee_address, consignee_phone_number, delivery_date, payment_method, total_quantity, total_price)
+                                         VALUES (:user_id, :status, :created_at, :updated_at, :consignee_name, :consignee_address, :consignee_phone_number, :delivery_date, :payment_method, :total_quantity, :total_price)");
+        $stmtOrder->execute([
+            ':user_id' => $user_id,
+            ':status' => $status,
+            ':created_at' => $created_at,
+            ':updated_at' => $updated_at,
+            ':consignee_name' => $consignee_name,
+            ':consignee_address' => $consignee_address,
+            ':consignee_phone_number' => $consignee_phone_number,
+            ':delivery_date' => $delivery_date,
+            ':payment_method' => $payment_method,
+            ':total_quantity' => $total_quantity,
+            ':total_price' => $total_price
+        ]);
+
+        $orderId = $conn->lastInsertId();
+
+        foreach ($cartItems as $item) {
+            $stmtDetail = $conn->prepare("INSERT INTO order_details (order_id, product_id, quantity, price)
+                                         VALUES (:order_id, :product_id, :quantity, :price)");
+            $stmtDetail->execute([
+                ':order_id' => $orderId,
+                ':product_id' => $item['product_id'],
+                ':quantity' => $item['quantity'],
+                ':price' => $item['price'],
+            ]);
+
+            $stmtUpdateStock = $conn->prepare("UPDATE products SET quantity = quantity - :quantity WHERE id = :product_id");
+            $stmtUpdateStock->execute([
+                ':quantity' => $item['quantity'],
+                ':product_id' => $item['product_id']
+            ]);
+
+            $delete_product_id = $item['product_id'];
+            if (isset($_SESSION['cart'][$delete_product_id])) {
+                unset($_SESSION['cart'][$delete_product_id]);
+            }
+            $sqlDelete = "DELETE FROM carts WHERE user_id = :user_id AND product_id = :product_id";
+            $stmtDelete = $conn->prepare($sqlDelete);
+            $stmtDelete->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $stmtDelete->bindParam(':product_id', $delete_product_id, PDO::PARAM_INT);
+            $stmtDelete->execute();
+        }
+
+        header("Location: order-confirmation.php");
+        exit();
     }
 } else {
     $error = "ID sản phẩm không hợp lệ!";
@@ -125,7 +130,7 @@ if (isset($_GET['id']) || is_array($_GET['id'])) {
     <link
         rel="website icon"
         type="png"
-        href="../images/banner/LogoT&T_2.png"
+        href="images/banner/LogoT&T_2.png"
         id="logo" />
     <style>
         /* General Reset */
@@ -301,20 +306,12 @@ if (isset($_GET['id']) || is_array($_GET['id'])) {
                 ?>
                         <div class="product" style="display: flex; align-items: center;">
                             <?php
-                            $imageArray = explode(', ', $item['images']);
-                            if (!empty($imageArray[0])) {
-                                $categoryName = removeAccents($item['category_name']);
-                                $brandName = removeAccents($item['brand_name']);
-
-                                $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
-                                $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
-                                $imagePath = "./images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
+                            $imagePath = getImagePath($item['category_name'], $item['brand_name'], $item['images']);
                             ?>
-                                <img
-                                    src="<?php echo $imagePath; ?>"
-                                    alt=""
-                                    class="w-50" />
-                            <?php } ?>
+                            <img
+                                src="<?php echo $imagePath; ?>"
+                                alt=""
+                                class="w-50" />
                             <!-- Thông tin sản phẩm -->
                             <div class="info_pro">
                                 <span><?php echo htmlspecialchars($item['name']); ?></span><br>

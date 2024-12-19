@@ -60,14 +60,15 @@ $(document).ready(function () {
   }
   proQty.on("click", ".qtybtn", function () {
     var $button = $(this);
-    var oldValue = $button.parent().find("input").val();
+    var $input = $button.parent().find("input");
+    var oldValue = parseFloat($input.val());
     var newVal;
     if ($button.hasClass("inc")) {
-      newVal = parseFloat(oldValue) + 1;
+      newVal = oldValue + 1;
     } else {
-      newVal = Math.max(0, parseFloat(oldValue) - 1);
+      newVal = Math.max(1, oldValue - 1);
     }
-    $button.parent().find("input").val(newVal);
+    $input.val(newVal);
   });
 
   let slideIndex = 1;

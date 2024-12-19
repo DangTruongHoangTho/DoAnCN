@@ -1,6 +1,7 @@
 <?php
 ob_start();
 include "layout/header_pro.php";
+$error = '';
 if (isset($_GET['id'])) {
   $_SESSION['productId'] = $_GET['id'];
 } else {
@@ -12,14 +13,14 @@ if (isset($_SESSION['productId'])) {
   die("Không có sản phẩm nào được chọn.");
 }
 $slug = isset($_POST['slug']) ? $_POST['slug'] : '';
-$quantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
+$quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
 
 $stmt = $conn->prepare("SELECT p.*, b.name AS brand_name, b.category_id, categories.name AS category_name, 
                         products_imgs.images FROM products p
                         JOIN brands b ON p.brand_id = b.id JOIN categories ON b.category_id = categories.id
                         INNER JOIN products_imgs ON p.id = products_imgs.product_id WHERE p.id = ?");
 $stmt->execute([$productId]);
-$product = $stmt->fetch(PDO::FETCH_ASSOC);
+$product = $stmt->fetch(PDO::FETCH_ASSOC);  
 $productSlug = removeAccents($product['name']);
 
 $stmtImgs = $conn->prepare("SELECT images FROM products_imgs WHERE product_id = ?");
@@ -53,38 +54,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Location: user_account/dangnhap.php");
     exit();
   }
+
   $productIdCart = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 1;
 
-  $stmtCart = $conn->prepare("SELECT id, quantity FROM carts WHERE user_id = ? AND product_id = ?");
-  $stmtCart->execute([$user_id, $productIdCart]);
-  $cartItem = $stmtCart->fetch(PDO::FETCH_ASSOC);
-  if ($cartItem) {
-    $newQuantity = $cartItem['quantity'] + $quantity;
-    $stmtUpCart = $conn->prepare("UPDATE carts SET quantity = ? WHERE id = ?");
-    $stmtUpCart->execute([$newQuantity, $cartItem['id']]);
+ $stmtStock = $conn->prepare("SELECT quantity FROM products WHERE id = ?");
+  $stmtStock->execute([$productIdCart]);
+  $stock = $stmtStock->fetch(PDO::FETCH_ASSOC); 
+
+  if (!$stock) {
+    $error = "Sản phẩm không tồn tại.";
   } else {
-    $stmtAddCart = $conn->prepare("INSERT INTO carts (user_id, product_id, quantity) VALUES (?, ?, ?)");
-    $stmtAddCart->execute([$user_id, $productIdCart, $quantity]);
-  }
+    $stmtCart = $conn->prepare("SELECT id, quantity FROM carts WHERE user_id = ? AND product_id = ?");
+    $stmtCart->execute([$user_id, $productIdCart]);
+    $cartItem = $stmtCart->fetch(PDO::FETCH_ASSOC);
 
-  if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
-  }
+    $currentQuantityInCart = $cartItem ? $cartItem['quantity'] : 0;
+    $newQuantity = $currentQuantityInCart + $quantity;
+    if ($newQuantity > $stock['quantity']) {
+      $error = "Số lượng đặt hàng vượt quá số lượng có trong kho. Vui lòng đặt lại.";
+    } else {
+      if ($cartItem) {
+        $stmtUpCart = $conn->prepare("UPDATE carts SET quantity = ? WHERE id = ?");
+        $stmtUpCart->execute([$newQuantity, $cartItem['id']]);
+      } else {
+        $stmtAddCart = $conn->prepare("INSERT INTO carts (user_id, product_id, quantity) VALUES (?, ?, ?)");
+        $stmtAddCart->execute([$user_id, $productIdCart, $quantity]);
+      }
 
-  $found = false;
-  foreach ($_SESSION['cart'] as &$item) {
-    if ($item['product_id'] == $productId) {
-      $item['quantity'] += $quantity;
-      $found = true;
-      break;
+      if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+      }
+
+      $found = false;
+      foreach ($_SESSION['cart'] as &$item) {
+        if ($item['product_id'] == $productId) {
+          $item['quantity'] += $quantity;
+          $found = true;
+          break;
+        }
+      }
+
+      if (!$found) {
+        $_SESSION['cart'][] = ['product_id' => $productId, 'quantity' => $quantity];
+      }
+
+      header("Location: chitietSP.php?id=$productId&slug=$productSlug");
+      exit();
     }
   }
-
-  if (!$found) {
-    $_SESSION['cart'][] = ['product_id' => $productId, 'quantity' => $quantity];
-  }
-  header("Location: chitietSP.php?id=$productId&slug=$productSlug");
-  exit();
 }
 
 ob_end_flush();
@@ -95,17 +112,17 @@ ob_end_flush();
   <div class="page-template noneBackground">
     <section class="block-products" id="burberry">
       <div class="container p-row">
-        <div class="row">
+      <?php if (!empty($error)) { ?>
+            <div class="alert alert-danger">
+              <?php echo htmlspecialchars($error); ?>
+            </div>
+          <?php } ?>
+        <div class="row"> 
           <div class="thumbnail-container col-sm-4 col-md-4 col-xs-6 col-lg-5">
             <?php
             if (!empty($imageArray)) {
               foreach ($imageArray as $index => $img) {
-                $categoryName = removeAccents($product['category_name']);
-                $brandName = removeAccents($product['brand_name']);
-
-                $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
-                $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
-                $imagePath = "images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($img));
+                $imagePath = getImagePath($product['category_name'], $product['brand_name'], $img);
             ?>
                 <div class="p-item">
                   <div class="mySlides">
@@ -127,6 +144,7 @@ ob_end_flush();
               <ul>
                 <li>Thương hiệu: <span><strong><?php echo htmlspecialchars($product['brand_name']); ?></strong></span></li>
                 <li>Size: <span><strong><?php echo htmlspecialchars($product['size']); ?></strong> ml</span></li>
+                <li>Số lượng còn trong kho: <span><strong><?php echo htmlspecialchars($product['quantity']); ?></strong></span></li>
               </ul>
               <h6>
                 <p class="mb-0 text-muted"><s><?php echo number_format($product['price'], 0, ',', '.'); ?>đ</s>

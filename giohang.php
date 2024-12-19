@@ -1,34 +1,39 @@
 <?php
 ob_start();
 include "layout/header_giohang.php";
+$error = '';
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id']) && isset($_POST['quantity'])) {
-    $product_id = $_POST['id'];
+    $product_id = intval($_POST['id']);
     $new_quantity = intval($_POST['quantity']);
 
-    if ($new_quantity > 0) {
+    $stmtStock = $conn->prepare("SELECT quantity FROM products WHERE id = :product_id");
+    $stmtStock->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+    $stmtStock->execute();
+    $stock = $stmtStock->fetch(PDO::FETCH_ASSOC);
+
+    
+    if (!$stock) {
+        $error = 'Sản phẩm không tồn tại.';
+    } elseif ($new_quantity > $stock['quantity']) {
+        $error = 'Số lượng vượt quá giới hạn trong kho.';
+    } elseif ($new_quantity <= 0) {
+        $error = 'Số lượng không được nhỏ hơn 0.';
+    } else {
         $_SESSION['cart'][$product_id] = $new_quantity;
-        $found = false;
-        foreach ($_SESSION['cart'] as &$item) {
-            if ($item['product_id'] == $productId) {
-                if ($new_quantity > $item['quantity']) {
-                    $item['quantity'] += $new_quantity;
-                } else {
-                    $item['quantity'] -= $new_quantity;
-                }
-                $found = true;
-                break;
-            }
-        }
+
         $sqlUpdate = "UPDATE carts SET quantity = :quantity WHERE user_id = :user_id AND product_id = :product_id";
         $stmtUpdate = $conn->prepare($sqlUpdate);
         $stmtUpdate->bindParam(':quantity', $new_quantity, PDO::PARAM_INT);
         $stmtUpdate->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmtUpdate->bindParam(':product_id', $product_id, PDO::PARAM_INT);
         $stmtUpdate->execute();
+
+        loadCartFromDatabase($user_id, $conn);
+
         header("Location: giohang.php");
         exit();
     }
@@ -46,6 +51,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_product_id'])) 
     $stmtDelete->bindParam(':product_id', $delete_product_id, PDO::PARAM_INT);
     $stmtDelete->execute();
 
+    loadCartFromDatabase($user_id, $conn);
+
     header("Location: giohang.php");
     exit();
 }
@@ -58,6 +65,11 @@ ob_end_flush();
         <?php if (!empty($cartItems)) { ?>
             <div class="row">
                 <div class="col-md-8">
+                    <?php if (!empty($error)){ ?>
+                        <div class="alert alert-danger">
+                            <?php echo htmlspecialchars($error); ?>
+                        </div>
+                    <?php } ?>
                     <form method="POST" action="" style="display:inline;">
                         <?php foreach ($cartItems  as $item) { ?>
                             <div class="cart-item border-bottom">
@@ -67,11 +79,7 @@ ob_end_flush();
                                         $productSlug = removeAccents($item['product_name']);
                                         echo "<a class='pro-a-href' href='chitietSP.php?id={$item['product_id']}&slug={$productSlug}'>";
                                         if (!empty($item['first_image'])) {
-                                            $categoryName = removeAccents($item['category_name']);
-                                            $brandName = removeAccents($item['brand_name']);
-                                            $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
-                                            $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
-                                            $imagePath = "./images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($item['first_image']));
+                                            $imagePath = getImagePath($item['category_name'], $item['brand_name'], $item['first_image']);
                                         ?>
                                             <img
                                                 src="<?php echo $imagePath; ?>"
@@ -94,8 +102,11 @@ ob_end_flush();
                                         <div> Số lượng</div>
                                         <div class="row">
                                             <div class="col-12 text-center">
-                                                <div class="pro-qty">
-                                                    <input type="text" id="quantity" name="quantity" min="1" value="<?php echo $item['quantity'] ?>" />
+                                                <div class="pro-quantity">
+                                                    <form method="POST" action="" style="display:inline;">
+                                                        <input type="hidden" name="id" value="<?php echo $item['product_id']; ?>">
+                                                        <input type="number" name="quantity" min="1" value="<?php echo $item['quantity']; ?>" onchange="this.form.submit()" />
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
@@ -103,12 +114,13 @@ ob_end_flush();
                                     <div class="col-1 text-center">
                                         <div class="row">
                                             <div class="col-12 text-right">
-                                                <input type="hidden" name="delete_product_id" value="<?php echo $item['product_id']; ?>">
-                                                <button type="submit" class="remove-item text-danger" style="border:none; background:none; cursor:pointer;">✕</button>
+                                                <form method="POST" action="" style="display:inline;">
+                                                    <input type="hidden" name="delete_product_id" value="<?php echo $item['product_id']; ?>">
+                                                    <button type="submit" class="remove-item text-danger" style="border:none; background:none; cursor:pointer;">✕</button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         <?php

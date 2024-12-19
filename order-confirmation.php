@@ -44,7 +44,7 @@ $paymentMethod = $order['payment_method'] === 'cod' ? 'Thanh toán khi nhận h�
     <link
         rel="website icon"
         type="png"
-        href="../images/banner/LogoT&T_2.png"
+        href="images/banner/LogoT&T_2.png"
         id="logo" />
     <style>
         body {
@@ -122,6 +122,7 @@ $paymentMethod = $order['payment_method'] === 'cod' ? 'Thanh toán khi nhận h�
             <p><strong>Họ và tên:</strong> <?php echo htmlspecialchars($order['consignee_name']); ?></p>
             <p><strong>Địa chỉ giao hàng:</strong> <?php echo htmlspecialchars($order['consignee_address']); ?></p>
             <p><strong>Số điện thoại:</strong> <?php echo htmlspecialchars($order['consignee_phone_number']); ?></p>
+            <p><strong>Tổng số lượng sản phẩm đã đặt:</strong> <?php echo htmlspecialchars($order['total_quantity']); ?></p>
             <p><strong>Ngày giao dự kiến:</strong> <?php echo htmlspecialchars($order['delivery_date']); ?></p>
             <p><strong>Phương thức thanh toán:</strong> <?php echo htmlspecialchars($paymentMethod); ?></p>
         </div>
@@ -130,19 +131,11 @@ $paymentMethod = $order['payment_method'] === 'cod' ? 'Thanh toán khi nhận h�
         <?php foreach ($orderDetails as $item) { ?>
             <div class="product">
                 <?php if (!empty($item['images'])) {
-                    $imageArray = explode(', ', $item['images']);
-                    if (!empty($imageArray[0])) {
-                        $categoryName = removeAccents($item['category_name']);
-                        $brandName = removeAccents($item['brand_name']);
-                        $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
-                        $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
-                        $imagePath = "./images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . htmlspecialchars(trim($imageArray[0]));
-                    ?>
-                        <img
-                            src="<?php echo $imagePath; ?>"
-                            alt=""
-                            class="w-50" />
-                    <?php } ?>
+                    $imagePath = getImagePath($item['category_name'], $item['brand_name'], $item['images']);?>
+                    <img
+                        src="<?php echo $imagePath; ?>"
+                        alt=""
+                        class="w-50" />
                 <?php } ?>
                 <div class="product-info">
                     <p><strong><?php echo htmlspecialchars($item['name']); ?></strong></p>
