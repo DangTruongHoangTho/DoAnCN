@@ -62,7 +62,7 @@ foreach ($categories as $category) {
         <nav class="navbar navbar-expand-lg sticky-top">
             <!-- Logo Begin-->
             <div class="flex-container row col-lg-8 col-md-12 col-sm-12">
-                <div class="header-right col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2 w-25">
+                <div class="header-right col-xl-2 col-lg-3 col-md-2 col-sm-2 col-2 w-25">
                     <a href="index.php" class="brand"><img src="images/banner/LogoT&T.png" alt="Logo" title="logo" /></a>
                 </div>
                 <!-- Menu Begin-->
@@ -100,7 +100,7 @@ foreach ($categories as $category) {
             <!-- Logo End -->
 
             <!-- Thanh tìm kiếm (Begin)-->
-            <div class="col-lg-3 col-md-12 col-12 justify-content-end" id="search-header">
+            <div class="col-lg-4 col-md-12 col-12 justify-content-end" id="search-header">
                 <div class="col-lg-12 col-md-12 col-12 justify-content d-flex align-items-center" id="account-cart-container">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <!-- Khi đã đăng nhập -->
