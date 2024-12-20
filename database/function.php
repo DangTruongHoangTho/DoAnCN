@@ -80,7 +80,23 @@ function getImagePath($categoryName, $brandName, $imageName)
 
     return $imagePath;
 }
+function getImagePath1($categoryName, $brandName, $imageName)
+{
+    $categoryName = removeAccents($categoryName);
+    $brandName = removeAccents($brandName);
 
+    $categoryNameFormated = str_replace('-', '', strtoupper($categoryName));
+    $brandNameFormatted = str_replace('-', '_', strtoupper($brandName));
+
+    $imagePath = "../images/categories/" . $categoryNameFormated . "/" . $brandNameFormatted . "/" . $imageName;
+
+    // Kiểm tra xem file ảnh có tồn tại không
+    if (!file_exists($imagePath)) {
+        $imagePath = "./images/default.jpg"; // Sử dụng ảnh mặc định nếu không tồn tại
+    }
+
+    return $imagePath;
+}
 function getCartTotalItems()
 {
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {

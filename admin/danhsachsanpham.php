@@ -2,7 +2,8 @@
     error_reporting(0);
     session_start();
     include '../database/connect.php';
-    
+    include '../database/function.php';
+
     if (!isset($_SESSION['user'])) {
         header("Location: index.php");
         exit;
@@ -169,11 +170,16 @@
                                 <?php 
                                     // Kiểm tra nếu có ảnh
                                     if (!empty($product['product_image'])): 
+                                        
                                         // Tạo đường dẫn ảnh
-                                        $categoryFolder = strtolower(str_replace(' ', '-', $product['category_name']));
-                                        $brandFolder = strtolower(str_replace(' ', '-', $product['brand_name']));
-                                        $productFolder = strtolower(str_replace(' ', '-', $product['name']));
-                                        $imagePath = "../images/categories/{$categoryFolder}/{$brandFolder}/{$productFolder}/" . htmlspecialchars($product['product_image']);
+                                        //$categoryFolder = strtolower(str_replace(' ', '-', $product['category_name']));
+                                        //$brandFolder = strtolower(str_replace(' ', '-', $product['brand_name']));
+
+
+                                        //$productFolder = strtolower(str_replace(' ', '-', $product['name']));
+                                        //$imagePath = "../images/categories/{$categoryFolder}/" . htmlspecialchars($product['product_image']);
+                                         $imagePath = getImagePath1($product['category_name'], $product['brand_name'], $product['product_image']);
+
                                 ?>
                                     <img src="<?= $imagePath ?>" alt="Ảnh sản phẩm" width="100">
                                 <?php else: ?>

@@ -1,66 +1,89 @@
 <?php
-    error_reporting(0);
-    session_start();
-    include '../database/connect.php';
-    
-    if (!isset($_SESSION['user'])) {
-        header("Location: index.php");
-        exit;
-    }
+error_reporting(0);
+session_start();
+include '../database/connect.php';
 
-    $user_name = $_SESSION['user']['name'];
-    $user_type = $_SESSION['user']['type'];
+if (!isset($_SESSION['user'])) {
+    header("Location: index.php");
+    exit;
+}
 
-    try {
+$user_name = $_SESSION['user']['name'];
+$user_type = $_SESSION['user']['type'];
 
-        $brandsStmt = $conn->prepare("SELECT * FROM brands");
-        $brandsStmt->execute();
-        $brands = $brandsStmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        $error = "Lỗi cơ sở dữ liệu: " . $e->getMessage();
-    }
+try {
+    $brandsStmt = $conn->prepare("SELECT * FROM brands");
+    $brandsStmt->execute();
+    $brands = $brandsStmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $error = "Lỗi cơ sở dữ liệu: " . $e->getMessage();
+}
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        // Lấy dữ liệu từ form
-        $name = $_POST['name'];
-        $brand_id = $_POST['brand_id'];
-        $price = $_POST['price'];
-        $discounted_price = $_POST['discounted_price'];
-        $quantity = $_POST['quantity'];
-        $size = $_POST['size'];
-        $origin = $_POST['origin'];
-        $incense_group = $_POST['incense_group'];
-        $style = $_POST['style'];
-        $product_image = $_FILES['product_image'];
-        if ($product_image['error'] == 0) {
-            $image_name = $product_image['name'];
-            $image_tmp_name = $product_image['tmp_name'];
-            $image_ext = pathinfo($image_name, PATHINFO_EXTENSION);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $name = $_POST['name'];
+    $brand_id = $_POST['brand_id'];
+    $price = $_POST['price'];
+    $discounted_price = $_POST['discounted_price'];
+    $quantity = $_POST['quantity'];
+    $size = $_POST['size'];
+    $origin = $_POST['origin'];
+    $year_of_release = $_POST['year_of_release'];
+    $description = $_POST['description'];
+    $incense_group = $_POST['incense_group'];
+    $style = $_POST['style'];
+
+    $image_names = [];
+    for ($i = 1; $i <= 3; $i++) {
+        $image_field = "product_image_$i";
+
+        if (isset($_FILES[$image_field]) && $_FILES[$image_field]['error'] === 0) {
+            $image_name = $_FILES[$image_field]['name'];
+            $image_tmp_name = $_FILES[$image_field]['tmp_name'];
+            $image_ext = strtolower(pathinfo($image_name, PATHINFO_EXTENSION));
             $image_new_name = uniqid('', true) . '.' . $image_ext;
             $image_path = "../images/products/" . $image_new_name;
-            move_uploaded_file($image_tmp_name, $image_path);
-        } else {
-            $image_new_name = null; // Nếu không có ảnh, gán giá trị null
-        }
 
-        try {
-            $stmt = $conn->prepare("INSERT INTO products (name, brand_id, price, discounted_price, quantity, size, origin, incense_group, style) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$name, $brand_id, $price, $discounted_price, $quantity, $size, $origin, $incense_group, $style]);
-
-            $product_id = $conn->lastInsertId();
-            if ($image_new_name) {
-                $stmt = $conn->prepare("INSERT INTO products_imgs (product_id, images) VALUES (?, ?)");
-                $stmt->execute([$product_id, $image_new_name]);
+            if (move_uploaded_file($image_tmp_name, $image_path)) {
+                echo "Lưu ảnh thành công: " . $image_new_name . "<br>";
+                $image_names[] = $image_new_name;
+            } else {
+                echo "Không thể lưu ảnh: " . $image_name . "<br>";
             }
-            header("Location: danhsachsanpham.php");
-            exit;
-        } catch (PDOException $e) {
-            $error = "Lỗi cơ sở dữ liệu khi thêm sản phẩm: " . $e->getMessage();
+        } elseif ($_FILES[$image_field]['error'] !== UPLOAD_ERR_NO_FILE) {
+            echo "Lỗi tải ảnh {$image_field}: " . $_FILES[$image_field]['error'] . "<br>";
         }
     }
-?>
 
+    try {
+        $stmt = $conn->prepare("INSERT INTO products (name, brand_id, price, discounted_price, quantity, size, origin, year_of_release, incense_group, style, description) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$name, $brand_id, $price, $discounted_price, $quantity, $size, $origin, $year_of_release, $incense_group, $style, $description]);
+
+        $product_id = $conn->lastInsertId();
+
+        if (!$product_id) {
+            echo "Không lấy được product_id.<br>";
+            exit;
+        }
+
+        foreach ($image_names as $image) {
+            try {
+                $stmt = $conn->prepare("INSERT INTO products_imgs (product_id, images) VALUES (?, ?)");
+                $stmt->execute([$product_id, $image]);
+                echo "Thêm ảnh thành công: " . $image . "<br>";
+            } catch (PDOException $e) {
+                echo "Lỗi khi thêm ảnh {$image}: " . $e->getMessage() . "<br>";
+            }
+        }
+
+        header("Location: danhsachsanpham.php");
+        exit;
+    } catch (PDOException $e) {
+        echo "Lỗi cơ sở dữ liệu: " . $e->getMessage() . "<br>";
+    }
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -93,7 +116,7 @@
             color: white;
         }
         .content {
-            margin-left: 250px;
+            margin-left: 270px;
             padding: 20px;
         }
         .header {
@@ -179,38 +202,54 @@
                 <?php endif; ?>
 
                 <form action="themsanpham.php" method="POST" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="name">Tên sản phẩm</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="name">Tên sản phẩm</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="brand_id">Thương hiệu</label>
+                            <select class="form-control" id="brand_id" name="brand_id" required>
+                                <option value="">Chọn thương hiệu</option>
+                                <?php foreach ($brands as $brand): ?>
+                                    <option value="<?= $brand['id'] ?>"><?= htmlspecialchars($brand['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="brand_id">Thương hiệu</label>
-                        <select class="form-control" id="brand_id" name="brand_id" required>
-                            <option value="">Chọn thương hiệu</option>
-                            <?php foreach ($brands as $brand): ?>
-                                <option value="<?= $brand['id'] ?>"><?= htmlspecialchars($brand['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="price">Giá</label>
+                            <input type="number" class="form-control" id="price" name="price" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="discounted_price">Giá khuyến mãi</label>
+                            <input type="number" class="form-control" id="discounted_price" name="discounted_price">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="quantity">Số lượng</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="price">Giá</label>
-                        <input type="number" class="form-control" id="price" name="price" required>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="size">Size (ml)</label>
+                            <input type="number" class="form-control" id="size" name="size" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="origin">Xuất xứ</label>
+                            <input type="text" class="form-control" id="origin" name="origin" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="discounted_price">Giá khuyến mãi</label>
-                        <input type="number" class="form-control" id="discounted_price" name="discounted_price">
-                    </div>
-                    <div class="form-group">
-                        <label for="quantity">Số lượng</label>
-                        <input type="number" class="form-control" id="quantity" name="quantity" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="size">Size (ml)</label>
-                        <input type="number" class="form-control" id="size" name="size" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="origin">Xuất xứ</label>
-                        <input type="text" class="form-control" id="origin" name="origin" required>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                        <label for="year_of_release">Năm phát hành</label>
+                        <input type="number" class="form-control" id="year_of_release" name="year_of_release" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                        <label for="description">Mô tả sản phẩm</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="incense_group">Nhóm hương</label>
@@ -220,11 +259,21 @@
                         <label for="style">Phong cách</label>
                         <input type="text" class="form-control" id="style" name="style">
                     </div>
-                    <div class="form-group">
-                        <label for="product_image">Ảnh sản phẩm</label>
-                        <input type="file" class="form-control" id="product_image" name="product_image" accept="image/*">
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="product_image_1">Ảnh sản phẩm 1</label>
+                            <input type="file" class="form-control" id="product_image_1" name="product_image_1" accept="image/*">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="product_image_2">Ảnh sản phẩm 2</label>
+                            <input type="file" class="form-control" id="product_image_2" name="product_image_2" accept="image/*">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="product_image_3">Ảnh sản phẩm 3</label>
+                            <input type="file" class="form-control" id="product_image_3" name="product_image_3" accept="image/*">
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
+                    <button type="submit" class="btn btn-custom btn-block">Thêm sản phẩm</button>
                 </form>
             </div>
         </div>
