@@ -195,3 +195,4 @@ function showAccountInfo() {
   clearActiveClass();
   document.getElementById("accountLink").classList.add("active");
 }
+
