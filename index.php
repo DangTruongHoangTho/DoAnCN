@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
 } else {
   $sql = "SELECT products.id AS product_id, products.name AS product_name, 
             brands.name AS brand_name, categories.name AS category_name, 
-            products.discounted_price, MIN(products_imgs.images) AS images FROM products 
+            products.price, products.discounted_price, MIN(products_imgs.images) AS images FROM products 
             INNER JOIN brands ON products.brand_id = brands.id 
             INNER JOIN products_imgs ON products.id = products_imgs.product_id
             INNER JOIN categories ON brands.category_id = categories.id 
