@@ -23,6 +23,7 @@ if (isset($_SESSION['user_id'])) {
     $stmtCart = $conn->prepare($sqlCart);
     $stmtCart->execute(['user_id' => $user_id]);
     $cart = $stmtCart->fetchAll(PDO::FETCH_ASSOC);
+    loadCartFromDatabase($user_id, $conn);
 }
 
 foreach ($categories as $category) {

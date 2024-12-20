@@ -1,6 +1,6 @@
 <?php include "layout/header.php";
 include "layout/banner.php";
-loadCartFromDatabase($user_id, $conn);
+
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
   $searchTerm = $_GET['search'];
   $products = searchProducts($searchTerm);
