@@ -6,12 +6,13 @@ function searchExactName($searchTerm)
             products.name AS product_name, 
             brands.name AS brand_name,
             categories.name AS category_name, 
-            products.price, products.images FROM products 
+            products.discounted_price, products_imgs.images FROM products 
             INNER JOIN brands ON products.brand_id = brands.id 
             INNER JOIN categories ON brands.category_id = categories.id 
+            INNER JOIN products_imgs ON products.id = products_imgs.product_id
             WHERE products.name LIKE :searchTerm";
     $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':searchTerm', $searchTerm);
+    $stmt->bindValue(':searchTerm', $searchTerm, PDO::PARAM_STR);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -23,13 +24,13 @@ function searchRelativeName($searchTerm)
             products.name AS product_name, 
             brands.name AS brand_name,
             categories.name AS category_name, 
-            products.price, products.images FROM products 
+            products.discounted_price, products_imgs.images FROM products 
             INNER JOIN brands ON products.brand_id = brands.id 
-            INNER JOIN categories ON brands.category_id = categories.id 
+            INNER JOIN categories ON brands.category_id = categories.id
+            INNER JOIN products_imgs ON products.id = products_imgs.product_id
             WHERE products.name LIKE :searchTerm";
     $stmt = $conn->prepare($sql);
-    $searchTerm = "%" . $searchTerm . "%";
-    $stmt->bindParam(':searchTerm', $searchTerm);
+    $stmt->bindValue(':searchTerm', "%$searchTerm%", PDO::PARAM_STR);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
