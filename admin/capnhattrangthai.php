@@ -111,7 +111,7 @@
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <h2 class="text-center mb-4">Admin Panel</h2>
+        <h2 class="text-center mb-4">Admin</h2>
         <a href="giaodienadmin.php">Trang chủ</a>
         <a href="danhsachdanhmuc.php">Danh sách danh mục</a>
         <a href="themdanhmuc.php">Thêm danh mục</a>
