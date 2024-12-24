@@ -13,16 +13,51 @@
         try {
             switch ($type) {
                 case 'category':
-                    $stmt = $conn->prepare("DELETE FROM categories WHERE id = :id");
-                    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                    $stmt->execute();
+                    if('category' == null){
+                        $stmt = $conn->prepare("DELETE FROM categories WHERE id = :id");
+                        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                        $stmt->execute();
+                        header("Location: danhsachdanhmuc.php");
+                        break;
+                    }else {
+                        $stmt = $conn->prepare("DELETE FROM products_imgs WHERE product_id = :id");
+                        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                        $stmt->execute();
+                        $stmt = $conn->prepare("DELETE FROM products WHERE brand_id = :id");
+                        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                        $stmt->execute();
+                        $stmt = $conn->prepare("DELETE FROM brands WHERE category_id = :id" );
+                        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                        $stmt->execute();
+                        $stmt = $conn->prepare("DELETE FROM categories WHERE id = :id");
+                        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                        $stmt->execute();
+                    }
                     header("Location: danhsachdanhmuc.php");
                     break;
                 
                 case 'brand':
-                    $stmt = $conn->prepare("DELETE FROM brands WHERE id = :id");
-                    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                    $stmt->execute();
+
+                    if('brand' == null){
+                        $stmt = $conn->prepare("DELETE FROM brands WHERE id = :id");
+                        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                        $stmt->execute();
+                        header("Location: danhsachthuonghieu.php");
+                        break;
+                    }else{
+                            
+                        $stmt = $conn->prepare("DELETE FROM products_imgs WHERE product_id = :id");
+                        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                        $stmt->execute();
+
+                        $stmt = $conn->prepare("DELETE FROM products WHERE brand_id = :id");
+                        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                        $stmt->execute();
+
+                        $stmt = $conn->prepare("DELETE FROM brands WHERE id = :id");
+                        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                        $stmt->execute();
+                    }
                     header("Location: danhsachthuonghieu.php");
                     break;
                 
@@ -48,3 +83,4 @@
     die("Thông tin xóa không hợp lệ.");
 }
 ?>
+

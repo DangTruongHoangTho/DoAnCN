@@ -92,7 +92,7 @@
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <h2 class="text-center mb-4">Admin Panel</h2>
+        <h2 class="text-center mb-4">Admin</h2>
         <a href="giaodienadmin.php">Trang chủ</a>
         <a href="danhsachdanhmuc.php">Danh sách danh mục</a>
         <a href="themdanhmuc.php">Thêm danh mục</a>
@@ -155,7 +155,6 @@
                         <th>Tên</th>
                         <th>Loại</th>
                         <th>Trạng thái</th>
-                        <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -165,10 +164,7 @@
                             <td><?= htmlspecialchars($user['name']) ?></td>
                             <td><?= htmlspecialchars(ucwords($user['type'])) ?></td>
                             <td><?= htmlspecialchars(ucwords($user['status'])) ?></td>
-                            <td>
-                                <a href="edit_user.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-primary">Sửa</a>
-                                <a href="delete_user.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa tài khoản này?')">Xóa</a>
-                            </td>
+                           
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
