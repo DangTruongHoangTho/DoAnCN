@@ -16,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search'])) {
   $stmt->execute();
   $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
 ?>
 <!-- Content Begin -->
 <main class="main">
