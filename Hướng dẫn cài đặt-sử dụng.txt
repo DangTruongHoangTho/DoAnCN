@@ -1,0 +1,93 @@
+================Hướng dẫn cài đặt===================
+1. Sử dụng Visual Studio Code và cài đặt wampserver.
+2. Coppy code đưa vào folder www của wampserver
+3. Mở wampserver.
+4. Import database có trong folder chứa source code và chỉnh lại cấu hình file kết nối database. 
+
+
+
+
+================Hướng dẫn sử dụng===================
+1. Truy cập localhost để chạy chương trình
+2. Chạy chương trình:
+	I. Trang User
+		Trang đăng ký:
+			Nhập thông tin đăng ký và bấm đăng ký.
+			Nhập mã otp để xác thực email.
+		Trang đăng nhập:
+			Nhập thông tin để đăng nhập.
+			Bấm nút đăng nhập.
+			Nếu quên mạt khẩu có thể bấm quên mật khẩu và nhập mã otp được gửi về mail, rồi đổi mật khẩu.
+		Trang chủ:
+			Chọn thương hiệu từ đanh mục trên header để xem các sản phẩm theo từng thương hiệu.
+			Chọn tìm kiếm để tìm kiếm sản phẩm muốn tìm.
+			Chọn sản phẩm để hiển thị chi tiết sản phẩm
+		Trang chi tiết sản phẩm:
+			Chọn số lượng để đặt hàng hoặc thêm vào giỏ hàng.
+			Kéo xuống cuối trang để xem các sản phẩm gợi ý.
+		Trang giỏ hàng:
+			Hiển thị các sản phẩm, số lượng đã chọn và tổng tiền trong giỏ hàng.
+		Trang thông tin tài khoản:
+			Hiển thị thông tin cá nhân của khách hàng, bấm nút chỉnh sửa để sửa thông tin.
+			Hiển thị danh sách các đơn đàng đã đặt.
+		Trang đặt hàng:
+			Hiển thị các sản phẩm muốn đặt hàng.
+			Nhập thông tin cá nhân và chọn phương pháp thanh toán để tiến hành đặt hàng.
+	II. Danh Sách Sản Phẩm
+		Nhập danh sách sản phẩm:
+			Chọn 1 từ menu danh sách sản phẩm.
+			Nhập thông tin cho từng sản phẩm.(nhập 1 loạt danh sách sản phẩm)
+		Xuất danh sách sản phẩm:
+			Chọn 2 từ menu danh sách sản phẩm.
+			Hiển thị danh sách sản phẩm.
+		Thêm sản phẩm:
+			Chọn 3 từ menu danh sách sản phẩm.
+			Nhập thông tin cho sản phẩm mới.(chỉ thêm 1 sản phẩm)
+		Xóa sản phẩm:
+			Chọn 4 từ menu danh sách sản phẩm.
+			Chọn sản phẩm cần xóa theo mã sản phẩm.
+		Sửa sản phẩm:
+			Chọn 5 từ menu danh sách sản phẩm.
+			Chọn sản phẩm cần sửa theo mã sản phẩm và nhập thông tin mới.
+		Tìm kiếm sản phẩm:
+			Chọn 6 từ menu danh sách sản phẩm.
+			Nhập mã sản phẩm cần tìm kiếm.
+		Thoát:
+			Chọn 0 để quay lại menu chính.
+	III. Trang Admin
+		Trang đăng ký:
+			Nhập thông tin đăng ký, chọn loại tài khoản và bấm đăng ký.
+		Trang đăng nhập:
+			Nhập thông tin đăng nhập và bấm đăng nhập.
+			Nếu là tài khoản admin thì sẽ đăng nhập vào trang admin, nếu là tài khoản user thì sẽ đăng nhập vào trang user.
+		Trang giao diện admin:
+			Thống kê các sản phẩm, thương hiệu, danh mục, hóa đơn.
+			Hiển thị danh sách người dùng của admin và user.
+		Trang giao diện user:
+			Thống kê các sản phẩm, thương hiệu, danh mục, hóa đơn.
+		Trang danh sách danh mục:
+			Hiển thị danh sách thông tin các danh mục của sản phẩm.
+			Trong danh sách có thể sửa hoặc xóa các danh mục trong danh sách.
+		Trang thêm danh mục:
+			Thêm các thông tin mới của danh mục.
+		Trang danh sách thương hiệu:
+			Hiển thị thông tin các thương hiệu của danh mục nào sản phẩm trong danh sách.
+			Trong danh sách có thể sửa hoặc xóa các thương hiệu trong danh sách.
+		Trang thêm thương hiệu:
+			Thêm các thông tin mới của thương hiệu.
+			Chọn thương hiệu này trong danh mục nào.
+			Nếu chưa có danh mục nào, không thể thêm thương hiệu.
+		Trang danh sách sản phẩm:
+			Hiển thị thông tin các sản phẩm của danh mục nào thương hiệu nào trong danh sách.
+			Trong danh sách có thể sửa hoặc xóa các sản phẩm trong danh sách.
+		Trang thêm sản phẩm:
+			Thêm các thông tin mới của sản phẩm.
+			Chọn sản phẩm trong thương hiệu nào.
+			Chọn từ 1 đến 3 hình ảnh.
+			Không thể thêm nếu điền thiếu thông tin.
+		Trang danh sách đơn hàng:
+			Hiển thị thông tin các đơn hàng từ user nào.
+			Trong danh sách có thể kiểm tra thông tin chi tiết đơn hàng.
+			Cập nhật lại trạng thái của đơn hàng nếu đơn hàng đang giao hoặc đang xử lý.
+		Nút đăng xuất:
+			Để đăng xuất khỏi tài khoản hiện tại.
